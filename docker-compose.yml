@@ -14,6 +14,16 @@ services:
         published: 8080
         protocol: tcp
 
+  mongo:
+    image: mongo:4.2
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=root
+    networks:
+      - dev_net
+
 networks:
   dev_net:
     external: true

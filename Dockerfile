@@ -31,6 +31,9 @@ RUN curl https://phar.phpunit.de/phpunit.phar --output phpunit.phar -L
 RUN chmod +x phpunit.phar
 RUN mv phpunit.phar /usr/local/bin/phpunit
 
+RUN pecl install mongodb \
+     && docker-php-ext-enable mongodb
+
 RUN composer global config allow-plugins.symfony/flex true --no-interaction
 RUN set -eux; \
     composer global require "symfony/flex" --prefer-dist --no-progress --no-suggest --classmap-authoritative; \
