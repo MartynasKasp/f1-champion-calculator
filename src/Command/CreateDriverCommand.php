@@ -2,7 +2,7 @@
 
 namespace App\Command;
 
-use App\Document\Driver\Driver;
+use App\Document\Driver;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;

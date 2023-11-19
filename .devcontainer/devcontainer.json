@@ -19,7 +19,8 @@
 				"jaguadoromero.vscode-php-create-class",
 				"valeryanm.vscode-phpsab",
 				"joelwmale.vscode-codeception",
-				"streetsidesoftware.code-spell-checker"
+				"streetsidesoftware.code-spell-checker",
+				"phproberto.vscode-php-getters-setters"
 			]
 		}
 	}
