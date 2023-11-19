@@ -1,7 +1,8 @@
 version: '3.4'
 
 services:
-  app:
+  calculator:
+    container_name: f1_calculator
     build:
       context: ./
       dockerfile: Dockerfile
@@ -15,6 +16,7 @@ services:
         protocol: tcp
 
   mongo:
+    container_name: f1_mongo
     image: mongo:4.2
     ports:
       - "27017:27017"
