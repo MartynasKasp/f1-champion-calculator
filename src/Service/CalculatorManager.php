@@ -224,6 +224,11 @@ class CalculatorManager
             //     return "$position-FL";
             // }
         }
-        throw new \Exception('Unexpected drop out position not found');
+        throw new \Exception(
+            'Unexpected drop out position not found. '
+            . "Data as follows: predicted leader points - $predictedLeaderPoints, "
+            . 'contender - ' . $contender->getNumber() . ', ' . $contender->getPoints()
+            . ", max points left - $maxPointsLeft"
+        );
     }
 }

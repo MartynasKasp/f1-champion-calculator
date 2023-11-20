@@ -2,12 +2,13 @@
 
 namespace App\Document;
 
+use App\Repository\DriverRepository;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 
 #[MongoDB\Document(repositoryClass: DriverRepository::class)]
 class Driver
 {
-    #[MongoDB\Id(type: "string")]
+    #[MongoDB\Id(type: "string", strategy: "none")]
     private string $number;
 
     #[MongoDB\Field(type: "string")]

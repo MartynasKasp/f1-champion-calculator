@@ -8,5 +8,17 @@
 actor: FunctionalTester
 modules:
     enabled:
-        # add a framework module here
+        - Symfony:
+            app_path: 'src'
+            environment: 'test'
+        - MongoDb:
+            dsn: 'mongodb://root:root@mongo:27017/f1_calculator-test?authSource=admin'
+            user: root
+            pass: root
+            # dump_type: mongodump
+            # dump: tests/Support/Data/f1_calculator-test
+            populate: false
+            cleanup: true
+            quiet: true
+
 step_decorators: ~

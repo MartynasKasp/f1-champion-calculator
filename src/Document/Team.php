@@ -7,7 +7,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 #[MongoDB\Document(repositoryClass: TeamRepository::class)]
 class Team
 {
-    #[MongoDB\Id(type: "string")]
+    #[MongoDB\Id(type: "string", strategy: "none")]
     private string $id;
 
     #[MongoDB\Field(type: "string")]
