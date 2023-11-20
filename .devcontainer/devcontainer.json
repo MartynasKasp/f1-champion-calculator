@@ -23,5 +23,6 @@
 				"phproberto.vscode-php-getters-setters"
 			]
 		}
-	}
+	},
+	"shutdownAction": "none"
 }

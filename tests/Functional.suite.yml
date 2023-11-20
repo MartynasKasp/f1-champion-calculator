@@ -18,7 +18,7 @@ modules:
             # dump_type: mongodump
             # dump: tests/Support/Data/f1_calculator-test
             populate: false
-            cleanup: true
+            cleanup: false
             quiet: true
 
 step_decorators: ~

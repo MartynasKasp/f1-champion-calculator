@@ -60,11 +60,6 @@ class CalculatorManager
         + ($sprintsRemaining * self::POINTS_SPRINT_P1);
     }
 
-    // public function calculateAvailablePointsForPosition(int $position): int
-    // {
-    //     return
-    // }
-
     public function calculatePossibleWin(): array
     {
         // TODO need to check if there is no winner yet
@@ -123,13 +118,8 @@ class CalculatorManager
         }
         // TODO need to adjust $sprintsRemaining if it is a sprint weekend
 
-        // $pointsGapNeeded => 112
         $pointsGapNeeded = $this->calculateAvailablePoints($racesRemaining - 1, $sprintsRemaining);
-        // $driversPointsDifference => 104
         $driversPointsDifference = $leadDriver->getPoints() - $relevantDrivers[0]->getPoints();
-
-        // // TODO check if it is a sprint weekend and add extra points
-        // $pointsAvailableDuringWeekend = self::POINTS_RACE_MAX;
 
         // Check if the standings leader can possibly get a win during the current weekend
         if ($driversPointsDifference + self::POINTS_RACE_MAX < $pointsGapNeeded) {
@@ -168,38 +158,18 @@ class CalculatorManager
             return $winConditions;
         }
 
-        // Checking finishing position WITH fastest lap
-        $predictedLeaderPoints = self::getRacePointsForFinish()[$position] + self::POINTS_RACE_FASTEST;
-        foreach ($contenders as $contender) {
-            $pointsDifference = $leader->getPoints() - $contender->getPoints();
-
-            if ($pointsDifference + $predictedLeaderPoints >= $pointsGapNeeded) {
-                $winConditions["$position+FL"][$contender->getNumber()] = '-1';
-            } else {
-                $dropOutPosition = $this->checkHighestPositionToDropOut(
-                    $leader->getPoints() + $predictedLeaderPoints,
-                    $contender,
-                    $pointsGapNeeded
-                );
-                $winConditions["$position+FL"][$contender->getNumber()] = $dropOutPosition;
-            }
-        }
+        // TODO: Check finishing position WITH fastest lap
 
         // Checking finishing position WITHOUT fastest lap
         $predictedLeaderPoints = self::getRacePointsForFinish()[$position];
         foreach ($contenders as $contender) {
-            $pointsDifference = $leader->getPoints() - $contender->getPoints();
-
-            if ($pointsDifference + $predictedLeaderPoints >= $pointsGapNeeded) {
-                $winConditions["$position"][$contender->getNumber()] = '-1';
-            } else {
-                $dropOutPosition = $this->checkHighestPositionToDropOut(
-                    $leader->getPoints() + $predictedLeaderPoints,
-                    $contender,
-                    $pointsGapNeeded
-                );
-                $winConditions["$position"][$contender->getNumber()] = $dropOutPosition;
-            }
+            $dropOutPosition = $this->checkHighestPositionToDropOut(
+                $leader->getPoints() + $predictedLeaderPoints,
+                $position,
+                $contender,
+                $pointsGapNeeded
+            );
+            $winConditions["$position"][$contender->getNumber()] = $dropOutPosition;
         }
 
         return $this->checkWinConditionForPosition(
@@ -213,22 +183,33 @@ class CalculatorManager
 
     private function checkHighestPositionToDropOut(
         float $predictedLeaderPoints,
+        int $leaderPosition,
         Driver $contender,
         int $maxPointsLeft
     ): string {
-        foreach (self::getRacePointsForFinish() as $position => $points) {
-            if ($predictedLeaderPoints - ($contender->getPoints() + $points) >= $maxPointsLeft) {
+        $availableFinishingPositions = self::getRacePointsForFinish();
+        unset($availableFinishingPositions[$leaderPosition]);
+
+        $i = 1;
+        foreach ($availableFinishingPositions as $position => $points) {
+            if (($pointsDiff = ($predictedLeaderPoints - ($contender->getPoints() + $points))) > $maxPointsLeft) {
+                if ($i === 1) {
+                    return '-1';
+                }
                 return (string)$position;
             }
-            // if ($predictedLeaderPoints - ($predictedContenderPoints) - self::POINTS_RACE_FASTEST === $maxPointsLeft) {
-            //     return "$position-FL";
-            // }
+            if ($pointsDiff == $maxPointsLeft) {
+                return "$position-FL";
+            }
+            $i++;
         }
-        throw new \Exception(
-            'Unexpected drop out position not found. '
-            . "Data as follows: predicted leader points - $predictedLeaderPoints, "
-            . 'contender - ' . $contender->getNumber() . ', ' . $contender->getPoints()
-            . ", max points left - $maxPointsLeft"
-        );
+        return (string)(count(self::getRacePointsForFinish()) + 1);
+        // throw new \Exception(
+        //     'Unexpected drop out position not found. '
+        //     . "Data as follows: predicted leader points - $predictedLeaderPoints, "
+        //     . "leader's position - $leaderPosition, "
+        //     . 'contender - ' . $contender->getNumber() . ', points' . $contender->getPoints()
+        //     . ", max points left - $maxPointsLeft"
+        // );
     }
 }
