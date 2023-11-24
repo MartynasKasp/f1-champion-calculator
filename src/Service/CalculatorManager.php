@@ -3,6 +3,8 @@
 namespace App\Service;
 
 use App\Document\Driver;
+use App\Document\Prediction;
+use App\Document\PredictionComparison;
 use Doctrine\ODM\MongoDB\DocumentManager;
 
 class CalculatorManager
@@ -17,11 +19,6 @@ class CalculatorManager
     public function __construct(
         private DocumentManager $documentManager
     ) {
-    }
-
-    public static function getPointsForFastestLap(): int
-    {
-        return self::POINTS_RACE_FASTEST;
     }
 
     public static function getRacePointsForFinish(): array
@@ -60,29 +57,17 @@ class CalculatorManager
         + ($sprintsRemaining * self::POINTS_SPRINT_P1);
     }
 
-    public function calculatePossibleWin(): array
+    public function calculatePossibleWin(): ?Prediction
     {
-        // TODO need to check if there is no winner yet
+        // TODO need to check if there is no champion yet to prevent calculation for upcoming races
 
         /** @var \App\Repository\DriverRepository $driverRepository */
         $driverRepository = $this->documentManager->getRepository(Driver::class);
         $drivers = $driverRepository->getDriversByStandings();
 
-        /**
-         * Races left: 5, next race in Suzuka
-         *
-         * Max Verstappen   341
-         * Charles Leclerc  237
-         * Sergio Perez     235
-         * George Russell   203 (irrelevant because can only go even with Verstappen)
-         *
-         * Max points left for grab: 125 + 5 + 8 = 138 (with fastest laps and one sprint)
-         */
-
         $seasonRacesLeft = 5;
         $seasonSprintsLeft = 1;
         $maxPointsLeftForGrab = $this->calculateAvailablePoints($seasonRacesLeft, $seasonSprintsLeft);
-        // $minPointsForGrab = $seasonRacesLeft * (self::POINTS_RACE_P10 + self::POINTS_RACE_FASTEST);
 
         /** @var \App\Document\Driver $leadDriver */
         $leadDriver = array_shift($drivers);
@@ -112,9 +97,9 @@ class CalculatorManager
         array $relevantDrivers,
         int $racesRemaining,
         int $sprintsRemaining
-    ): array {
+    ): ?Prediction {
         if (count($relevantDrivers) == 0) {
-            throw new \Exception('Unexpected empty $relevantDrivers');
+            throw new \Exception('Unexpected empty relevantDrivers');
         }
         // TODO need to adjust $sprintsRemaining if it is a sprint weekend
 
@@ -124,16 +109,23 @@ class CalculatorManager
         // Check if the standings leader can possibly get a win during the current weekend
         if ($driversPointsDifference + self::POINTS_RACE_MAX < $pointsGapNeeded) {
             // Lead driver cannot achieve a win yet even with P1 + Fastest Lap (and sprint win TODO)
-            return [];
+            return null;
         }
 
-        $winConditions = [
-            'driver' => $leadDriver->getNumber()
-        ];
-        $comparedAgainstContenders = $this->checkWinConditionForPosition($leadDriver, $relevantDrivers, $pointsGapNeeded);
+        $prediction = new Prediction();
+        $prediction->setDriverId($leadDriver->getNumber());
 
-        $winConditions['comparison'] = $comparedAgainstContenders;
-        return $winConditions;
+        $this->checkWinConditionForPosition(
+            $leadDriver,
+            $relevantDrivers,
+            $pointsGapNeeded,
+            $prediction
+        );
+
+        $this->documentManager->persist($prediction);
+        $this->documentManager->flush();
+
+        return $prediction;
     }
 
     /**
@@ -144,40 +136,63 @@ class CalculatorManager
      * @param int $pointsGapNeeded  How many points does a leader need to become the champion
      * @param int $position         Standings leader's predicted race finishing position
      * @param array $winConditions  Win conditions calculated
+     *
+     * @return Prediction
      */
     private function checkWinConditionForPosition(
         Driver $leader,
         array $contenders,
         int $pointsGapNeeded,
+        Prediction $prediction,
         int $position = 1,
-        array $winConditions = []
-    ) {
+    ): Prediction {
         // TODO: handle sprint race weekends
 
         if ($position > count(self::getRacePointsForFinish())) {
-            return $winConditions;
+            return $prediction;
         }
 
-        // TODO: Check finishing position WITH fastest lap
-
-        // Checking finishing position WITHOUT fastest lap
         $predictedLeaderPoints = self::getRacePointsForFinish()[$position];
         foreach ($contenders as $contender) {
-            $dropOutPosition = $this->checkHighestPositionToDropOut(
+            // Checking finishing position WITH fastest lap
+            [$dropOutPosition, $_] = $this->checkHighestPositionToDropOut(
+                $leader->getPoints() + $predictedLeaderPoints,
+                $position,
+                $contender,
+                $pointsGapNeeded,
+                true
+            );
+            $comparison = new PredictionComparison();
+            $comparison
+                ->setLeaderPosition($position)
+                ->setLeaderFL(true)
+                ->setContenderId($contender->getNumber())
+                ->setHighestPosition($dropOutPosition);
+            $prediction->addComparison($comparison);
+
+            // Checking finishing position WITHOUT fastest lap
+            [$dropOutPosition, $withoutFL] = $this->checkHighestPositionToDropOut(
                 $leader->getPoints() + $predictedLeaderPoints,
                 $position,
                 $contender,
                 $pointsGapNeeded
             );
-            $winConditions["$position"][$contender->getNumber()] = $dropOutPosition;
+            $comparison = new PredictionComparison();
+            $comparison
+                ->setLeaderPosition($position)
+                ->setLeaderFL(false)
+                ->setContenderId($contender->getNumber())
+                ->setHighestPosition($dropOutPosition)
+                ->setWithoutFL($withoutFL);
+            $prediction->addComparison($comparison);
         }
 
         return $this->checkWinConditionForPosition(
             $leader,
             $contenders,
             $pointsGapNeeded,
-            $position + 1,
-            $winConditions
+            $prediction,
+            $position + 1
         );
     }
 
@@ -185,31 +200,38 @@ class CalculatorManager
         float $predictedLeaderPoints,
         int $leaderPosition,
         Driver $contender,
-        int $maxPointsLeft
-    ): string {
+        int $maxPointsLeft,
+        bool $withFastest = false
+    ): array {
         $availableFinishingPositions = self::getRacePointsForFinish();
         unset($availableFinishingPositions[$leaderPosition]);
+
+        if ($withFastest) {
+            $predictedLeaderPoints += self::POINTS_RACE_FASTEST;
+        }
 
         $i = 1;
         foreach ($availableFinishingPositions as $position => $points) {
             if (($pointsDiff = ($predictedLeaderPoints - ($contender->getPoints() + $points))) > $maxPointsLeft) {
                 if ($i === 1) {
-                    return '-1';
+                    return [-1, false];
                 }
-                return (string)$position;
+                return [$position, false];
             }
             if ($pointsDiff == $maxPointsLeft) {
-                return "$position-FL";
+                if ($withFastest && ($i === 1 || $position === 10)) {
+                    return [-1, false];
+                }
+                if ($withFastest) {
+                    return [$position, false];
+                }
+                return [$position, true];
             }
             $i++;
         }
-        return (string)(count(self::getRacePointsForFinish()) + 1);
-        // throw new \Exception(
-        //     'Unexpected drop out position not found. '
-        //     . "Data as follows: predicted leader points - $predictedLeaderPoints, "
-        //     . "leader's position - $leaderPosition, "
-        //     . 'contender - ' . $contender->getNumber() . ', points' . $contender->getPoints()
-        //     . ", max points left - $maxPointsLeft"
-        // );
+        return [
+            count(self::getRacePointsForFinish()) + 1,
+            false
+        ];
     }
 }

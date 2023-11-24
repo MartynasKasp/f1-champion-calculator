@@ -17,13 +17,23 @@ class CalculatorTest extends \Codeception\Test\Unit
         $calculatorManager = $this->tester->grabService(CalculatorManager::class);
         $prediction = $calculatorManager->calculatePossibleWin();
 
-        $this->assertEquals('1', $prediction['driver']);
-        $this->assertArrayHasKey('comparison', $prediction);
+        $this->assertNotNull($prediction);
+        /** @var \App\Document\Prediction $prediction */
+        $this->assertEquals('1', $prediction->getDriverId());
+        $this->assertNotEmpty($prediction->getComparisons());
+        $this->assertEquals(40, count($prediction->getComparisons()));
 
-        $this->assertEquals('3', $prediction['comparison']['1']['16']);
-        $this->assertEquals('8-FL', $prediction['comparison']['5']['11']);
-        $this->assertEquals('11', $prediction['comparison']['6']['16']);
-        $this->assertEquals('11', $prediction['comparison']['7']['16']);
-        $this->assertEquals('11', $prediction['comparison']['7']['11']);
+        $this->assertEquals('-1', $prediction->getComparisons()[0]->getHighestPosition());
+        $this->assertEquals('3', $prediction->getComparisons()[1]->getHighestPosition());
+        $this->assertEquals('5', $prediction->getComparisons()[5]->getHighestPosition());
+        $this->assertTrue($prediction->getComparisons()[5]->isWithoutFL());
+        $this->assertEquals('4', $prediction->getComparisons()[7]->getHighestPosition());
+        $this->assertTrue($prediction->getComparisons()[7]->isWithoutFL());
+        $this->assertEquals('5', $prediction->getComparisons()[10]->getHighestPosition());
+        $this->assertEquals('8', $prediction->getComparisons()[19]->getHighestPosition());
+        $this->assertTrue($prediction->getComparisons()[19]->isWithoutFL());
+        $this->assertEquals('11', $prediction->getComparisons()[21]->getHighestPosition());
+        $this->assertEquals('11', $prediction->getComparisons()[25]->getHighestPosition());
+        $this->assertEquals('11', $prediction->getComparisons()[27]->getHighestPosition());
     }
 }
