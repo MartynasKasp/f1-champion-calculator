@@ -2,13 +2,17 @@
 
 namespace App\Service;
 
-use App\Document\Driver;
+use App\Document\DriverStandings;
 use App\Document\Prediction;
 use App\Document\PredictionComparison;
+use App\Document\Season;
+use App\Trait\LoggerInjector;
 use Doctrine\ODM\MongoDB\DocumentManager;
 
 class CalculatorManager
 {
+    use LoggerInjector;
+
     const POINTS_RACE_P1 = 25;
     const POINTS_RACE_P10 = 1;
     const POINTS_RACE_FASTEST = 1;
@@ -57,23 +61,49 @@ class CalculatorManager
         + ($sprintsRemaining * self::POINTS_SPRINT_P1);
     }
 
-    public function calculatePossibleWin(): ?Prediction
+    public function calculate(): void
     {
-        // TODO need to check if there is no champion yet to prevent calculation for upcoming races
+        /** @var \App\Repository\SeasonRepository $seasonRepository */
+        $seasonRepository = $this->documentManager->getRepository(Season::class);
+        $currentSeason = $seasonRepository->getCurrentSeason();
 
-        /** @var \App\Repository\DriverRepository $driverRepository */
-        $driverRepository = $this->documentManager->getRepository(Driver::class);
-        $drivers = $driverRepository->getDriversByStandings();
+        if (null === $currentSeason) {
+            throw new \Exception("Current season not found.");
+        }
 
-        $seasonRacesLeft = 5;
-        $seasonSprintsLeft = 1;
+        if (null !== $currentSeason->getChampion()) {
+            $this->logger->info('Driver championship for current season is already decided.');
+            return;
+        }
+
+        $calculatedPredictions = $this->calculatePossibleWin($currentSeason);
+        if ($calculatedPredictions === null) {
+            $this->logger->info('No predictions for upcoming race calculated.');
+        } else {
+            $this->logger->info('New predictions for upcoming race calculated.');
+        }
+    }
+
+    public function calculatePossibleWin(Season $season): ?Prediction
+    {
+        /** @var \App\Repository\DriverStandingsRepository $standingsRepository */
+        $standingsRepository = $this->documentManager->getRepository(DriverStandings::class);
+        $drivers = $standingsRepository->getDriversByStandingsForSeason($season->getId());
+
+        $seasonRacesLeft = $season->getRaces() - $season->getCompletedRaces();
+        $seasonSprintsLeft = $season->getSprints() - $season->getCompletedSprints();
         $maxPointsLeftForGrab = $this->calculateAvailablePoints($seasonRacesLeft, $seasonSprintsLeft);
 
-        /** @var \App\Document\Driver $leadDriver */
+        if ($seasonRacesLeft === 0) {
+            $this->logger->error('No races for this season left.');
+            return null;
+        }
+
+        /** @var \App\Document\DriverStandings $leadDriver */
         $leadDriver = array_shift($drivers);
         $relevantDrivers = array_filter(
             $drivers,
-            fn (Driver $driver) => ($driver->getPoints() + $maxPointsLeftForGrab > $leadDriver->getPoints())
+            fn (DriverStandings $driver) => ($driver->getPoints() + $maxPointsLeftForGrab > $leadDriver->getPoints())
         );
 
         return $this->checkWinConditions(
@@ -87,13 +117,13 @@ class CalculatorManager
     /**
      * Check win conditions for upcoming race
      *
-     * @param Driver $leadDriver            Drivers standings leader
-     * @param Driver[] $relevantDrivers     Drivers still in contention
+     * @param DriverStandings $leadDriver            Drivers standings leader
+     * @param DriverStandings[] $relevantDrivers     Drivers still in contention
      * @param int $racesRemaining           Remaining races in season
      * @param int $sprintsRemaining         Remaining sprints in season
      */
     private function checkWinConditions(
-        Driver $leadDriver,
+        DriverStandings $leadDriver,
         array $relevantDrivers,
         int $racesRemaining,
         int $sprintsRemaining
@@ -113,7 +143,7 @@ class CalculatorManager
         }
 
         $prediction = new Prediction();
-        $prediction->setDriverId($leadDriver->getNumber());
+        $prediction->setDriverId($leadDriver->getDriver()->getNumber());
 
         $this->checkWinConditionForPosition(
             $leadDriver,
@@ -131,8 +161,8 @@ class CalculatorManager
     /**
      * Recursively check leading driver's winning condition for every point scoring race position
      *
-     * @param Driver $leader        Standings leader
-     * @param Driver[] $contenders  Drivers still in contention
+     * @param DriverStandings $leader        Standings leader
+     * @param DriverStandings[] $contenders  Drivers still in contention
      * @param int $pointsGapNeeded  How many points does a leader need to become the champion
      * @param int $position         Standings leader's predicted race finishing position
      * @param array $winConditions  Win conditions calculated
@@ -140,7 +170,7 @@ class CalculatorManager
      * @return Prediction
      */
     private function checkWinConditionForPosition(
-        Driver $leader,
+        DriverStandings $leader,
         array $contenders,
         int $pointsGapNeeded,
         Prediction $prediction,
@@ -166,7 +196,7 @@ class CalculatorManager
             $comparison
                 ->setLeaderPosition($position)
                 ->setLeaderFL(true)
-                ->setContenderId($contender->getNumber())
+                ->setContenderId($contender->getDriver()->getNumber())
                 ->setHighestPosition($dropOutPosition);
             $prediction->addComparison($comparison);
 
@@ -181,7 +211,7 @@ class CalculatorManager
             $comparison
                 ->setLeaderPosition($position)
                 ->setLeaderFL(false)
-                ->setContenderId($contender->getNumber())
+                ->setContenderId($contender->getDriver()->getNumber())
                 ->setHighestPosition($dropOutPosition)
                 ->setWithoutFL($withoutFL);
             $prediction->addComparison($comparison);
@@ -199,7 +229,7 @@ class CalculatorManager
     private function checkHighestPositionToDropOut(
         float $predictedLeaderPoints,
         int $leaderPosition,
-        Driver $contender,
+        DriverStandings $contender,
         int $maxPointsLeft,
         bool $withFastest = false
     ): array {

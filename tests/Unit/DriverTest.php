@@ -3,6 +3,8 @@
 namespace Tests\Unit;
 
 use App\Document\Driver;
+use App\Document\DriverStandings;
+use App\Document\Season;
 use Tests\Support\UnitTester;
 
 class DriverTest extends \Codeception\Test\Unit
@@ -11,14 +13,21 @@ class DriverTest extends \Codeception\Test\Unit
 
     public function testAddDriverPoints()
     {
-        $driver = new Driver();
-        $driver
+        $season = (new Season())
+            ->setId('1950');
+
+        $driver = (new Driver())
             ->setNumber('1')
-            ->setFullName('Nino Farina')
+            ->setFullName('Nino Farina');
+
+        $standings = new DriverStandings();
+        $standings
+            ->setSeason($season)
+            ->setDriver($driver)
             ->setPoints(26);
 
-        $driver->addPoints(4);
+        $standings->addPoints(4);
 
-        $this->assertEquals(30, $driver->getPoints());
+        $this->assertEquals(30, $standings->getPoints());
     }
 }
