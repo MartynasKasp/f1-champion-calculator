@@ -2,6 +2,7 @@
 
 namespace App\Document;
 
+use App\Repository\TeamRepository;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 
 #[MongoDB\Document(repositoryClass: TeamRepository::class)]

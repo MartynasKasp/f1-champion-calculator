@@ -13,7 +13,6 @@ class DriverStandingsRepository extends DocumentRepository
             ->equals($season)
             ->sort('points', -1)
             ->getQuery()
-            ->execute()
             ->toArray();
     }
 }

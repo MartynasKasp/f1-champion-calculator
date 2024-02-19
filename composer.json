@@ -95,6 +95,9 @@
         "test": [
             "php bin/console doctrine:mongodb:fixtures:load --no-interaction --env=test",
             "vendor/bin/codecept run"
+        ],
+        "analyse": [
+            "vendor/bin/phpstan"
         ]
     },
     "conflict": {
@@ -113,6 +116,7 @@
         "codeception/module-phpbrowser": "*",
         "codeception/module-symfony": "^3.1",
         "doctrine/doctrine-fixtures-bundle": "^3.4",
+        "phpstan/phpstan": "^1.10",
         "phpunit/phpunit": "^9.5",
         "slevomat/coding-standard": "^8.11",
         "squizlabs/php_codesniffer": "3.7.2",

@@ -6,7 +6,7 @@ use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 
 class SeasonRepository extends DocumentRepository
 {
-    public function getCurrentSeason(): \App\Document\Season
+    public function getCurrentSeason(): ?\App\Document\Season
     {
         $date = new \DateTime();
 

@@ -161,11 +161,11 @@ class CalculatorManager
     /**
      * Recursively check leading driver's winning condition for every point scoring race position
      *
-     * @param DriverStandings $leader        Standings leader
-     * @param DriverStandings[] $contenders  Drivers still in contention
-     * @param int $pointsGapNeeded  How many points does a leader need to become the champion
-     * @param int $position         Standings leader's predicted race finishing position
-     * @param array $winConditions  Win conditions calculated
+     * @param DriverStandings   $leader         Standings leader
+     * @param DriverStandings[] $contenders     Drivers still in contention
+     * @param int $pointsGapNeeded              How many points does a leader need to become the champion
+     * @param Prediction $prediction            Calculated predictions
+     * @param int $position                     Standings leader's predicted race finishing position
      *
      * @return Prediction
      */
