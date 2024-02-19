@@ -14,12 +14,6 @@ class Driver
     #[MongoDB\Field(type: "string")]
     private string $fullName;
 
-    #[MongoDB\Field(type: "float")]
-    private float $points = 0;
-
-    #[MongoDB\Field(type: "string", nullable: true)]
-    private ?string $teamId = null;
-
     public function getNumber(): string
     {
         return $this->number;
@@ -39,34 +33,6 @@ class Driver
     public function setFullName(string $fullName): self
     {
         $this->fullName = $fullName;
-        return $this;
-    }
-
-    public function getPoints(): float
-    {
-        return $this->points;
-    }
-
-    public function setPoints(float $points): self
-    {
-        $this->points = $points;
-        return $this;
-    }
-
-    public function addPoints(float $points)
-    {
-        $this->points += $points;
-        return $this;
-    }
-
-    public function getTeamId(): ?string
-    {
-        return $this->teamId;
-    }
-
-    public function setTeamId(string $teamId): self
-    {
-        $this->teamId = $teamId;
         return $this;
     }
 }

@@ -2,7 +2,9 @@
 
 namespace Tests\Functional;
 
+use App\Document\Season;
 use App\Service\CalculatorManager;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Tests\Support\FunctionalTester;
 
 class CalculatorTest extends \Codeception\Test\Unit
@@ -14,8 +16,17 @@ class CalculatorTest extends \Codeception\Test\Unit
         // Fixtures are set to simulate results before Japanese GP in 2022
         // Calculates predictions for Japanese GP in 2022
 
+        /** @var DocumentManager $documentManager */
+        $documentManager = $this->tester->grabService(DocumentManager::class);
+        /** @var \App\Repository\SeasonRepository $seasonRepository */
+        $seasonRepository = $documentManager->getRepository(Season::class);
+        $season2022 = $seasonRepository->findSeasonInPeriod(new \DateTime('2022-10-03'));
+
+        $this->assertEquals('2022', $season2022->getId());
+
+        /** @var CalculatorManager $calculatorManager */
         $calculatorManager = $this->tester->grabService(CalculatorManager::class);
-        $prediction = $calculatorManager->calculatePossibleWin();
+        $prediction = $calculatorManager->calculatePossibleWin($season2022);
 
         $this->assertNotNull($prediction);
         /** @var \App\Document\Prediction $prediction */
