@@ -1,31 +1,24 @@
 <?php
 
-namespace App\Document\Driver;
+namespace App\Document;
 
+use App\Repository\DriverRepository;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 
-#[MongoDB\Document]
+#[MongoDB\Document(repositoryClass: DriverRepository::class)]
 class Driver
 {
-    #[MongoDB\Id(type: "string", strategy: "UUID")]
-    private string $id;
-
-    #[MongoDB\Field(type: "string")]
+    #[MongoDB\Id(type: "string", strategy: "none")]
     private string $number;
 
     #[MongoDB\Field(type: "string")]
     private string $fullName;
 
     #[MongoDB\Field(type: "float")]
-    private string $points = '0';
+    private float $points = 0;
 
-    #[MongoDB\Field(type: "string")]
-    private string $team;
-
-    public function getId(): string
-    {
-        return $this->id;
-    }
+    #[MongoDB\Field(type: "string", nullable: true)]
+    private ?string $teamId = null;
 
     public function getNumber(): string
     {
@@ -49,31 +42,31 @@ class Driver
         return $this;
     }
 
-    public function getPoints(): string
+    public function getPoints(): float
     {
         return $this->points;
     }
 
-    public function setPoints(string $points): self
+    public function setPoints(float $points): self
     {
         $this->points = $points;
         return $this;
     }
 
-    public function addPoints(string $points)
+    public function addPoints(float $points)
     {
         $this->points += $points;
         return $this;
     }
 
-    public function getTeam(): string
+    public function getTeamId(): ?string
     {
-        return $this->team;
+        return $this->teamId;
     }
 
-    public function setTeam(string $team): self
+    public function setTeamId(string $teamId): self
     {
-        $this->team = $team;
+        $this->teamId = $teamId;
         return $this;
     }
 }

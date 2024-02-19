@@ -91,6 +91,10 @@
         ],
         "lint": [
             "vendor/bin/phpcs"
+        ],
+        "test": [
+            "php bin/console doctrine:mongodb:fixtures:load --no-interaction --env=test",
+            "vendor/bin/codecept run"
         ]
     },
     "conflict": {
@@ -103,6 +107,12 @@
         }
     },
     "require-dev": {
+        "codeception/codeception": "^5.0",
+        "codeception/module-asserts": "^3.0",
+        "codeception/module-mongodb": "^3.0",
+        "codeception/module-phpbrowser": "*",
+        "codeception/module-symfony": "^3.1",
+        "doctrine/doctrine-fixtures-bundle": "^3.4",
         "phpunit/phpunit": "^9.5",
         "slevomat/coding-standard": "^8.11",
         "squizlabs/php_codesniffer": "3.7.2",
