@@ -1,9 +1,9 @@
 <?php
 
-namespace App\DataFixtures\MongoDB;
+namespace App\DataFixtures;
 
-use App\Document\Season;
-use Doctrine\Bundle\MongoDBBundle\Fixture\Fixture;
+use App\Entity\Season;
+use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
 class SeasonFixtures extends Fixture

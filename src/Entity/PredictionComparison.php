@@ -1,31 +1,33 @@
 <?php
 
-namespace App\Document;
+namespace App\Entity;
 
-use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use Doctrine\ORM\Mapping as ORM;
 
-#[MongoDB\EmbeddedDocument]
+#[ORM\Entity]
 class PredictionComparison
 {
-    #[MongoDB\Id(type: "string", strategy: "UUID")]
-    protected ?string $id = null;
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: "SEQUENCE")]
+    #[ORM\Column(type: "string")]
+    protected ?string $id;
 
-    #[MongoDB\Field(type: "int")]
+    #[ORM\Column(type: "integer")]
     protected int $leaderPosition;
 
-    #[MongoDB\Field(type: "bool")]
+    #[ORM\Column(type: "boolean")]
     protected bool $leaderFL;
 
-    #[MongoDB\Field(type: "string")]
-    protected string $contenderId;
+    #[ORM\ManyToOne]
+    protected Driver $contender;
 
-    #[MongoDB\Field(type: "int")]
+    #[ORM\Column(type: "integer")]
     protected int $highestPosition;
 
-    #[MongoDB\Field(type: "bool")]
+    #[ORM\Column(type: "boolean")]
     protected bool $withoutFL = false;
 
-    public function getId(): string
+    public function getId(): ?string
     {
         return $this->id;
     }
@@ -52,14 +54,14 @@ class PredictionComparison
         return $this;
     }
 
-    public function getContenderId(): string
+    public function getContender(): Driver
     {
-        return $this->contenderId;
+        return $this->contender;
     }
 
-    public function setContenderId(string $contenderId): self
+    public function setContender(Driver $contender): self
     {
-        $this->contenderId = $contenderId;
+        $this->contender = $contender;
         return $this;
     }
 

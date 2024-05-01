@@ -15,16 +15,14 @@ services:
         published: 8080
         protocol: tcp
 
-  mongo:
-    container_name: f1_mongo
-    image: mongo:4.2
-    ports:
-      - "27017:27017"
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=root
+  postgres:
+    container_name: f1_postgres
+    image: postgres:16.2
     networks:
       - dev_net
+    environment:
+      POSTGRES_PASSWORD: root
+      POSTGRES_USER: root
 
 networks:
   dev_net:

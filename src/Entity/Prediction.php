@@ -1,24 +1,23 @@
 <?php
 
-namespace App\Document;
+namespace App\Entity;
 
-use App\Repository\PredictionRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use Doctrine\ORM\Mapping as ORM;
 
-#[MongoDB\Document(repositoryClass: PredictionRepository::class)]
+#[ORM\Entity]
 class Prediction
 {
-    #[MongoDB\Id(type: "string", strategy: "UUID")]
-    protected ?string $id = null;
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: "SEQUENCE")]
+    #[ORM\Column(type: "string")]
+    protected ?string $id;
 
-    #[MongoDB\Field(type: "string")]
-    protected string $driverId;
+    #[ORM\ManyToOne]
+    protected Driver $driver;
 
-    // protected string $raceId;
-
-    #[MongoDB\EmbedMany(strategy: "addToSet", targetDocument: PredictionComparison::class)]
+    #[ORM\OneToMany(PredictionComparison::class, mappedBy: "id")]
     protected Collection $comparisons;
 
     public function __construct()
@@ -31,15 +30,15 @@ class Prediction
         return $this->id;
     }
 
-    public function setDriverId(string $driverId): self
+    public function setDriver(Driver $driver): self
     {
-        $this->driverId = $driverId;
+        $this->driver = $driver;
         return $this;
     }
 
-    public function getDriverId(): string
+    public function getDriver(): Driver
     {
-        return $this->driverId;
+        return $this->driver;
     }
 
     public function getComparisons()

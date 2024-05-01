@@ -2,7 +2,7 @@
 
 namespace Tests\Functional;
 
-use App\Document\Season;
+use App\Entity\Season;
 use App\Service\CalculatorManager;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Tests\Support\FunctionalTester;
@@ -20,7 +20,7 @@ class CalculatorTest extends \Codeception\Test\Unit
         $documentManager = $this->tester->grabService(DocumentManager::class);
         /** @var \App\Repository\SeasonRepository $seasonRepository */
         $seasonRepository = $documentManager->getRepository(Season::class);
-        $season2022 = $seasonRepository->findSeasonInPeriod(new \DateTime('2022-10-03'));
+        $season2022 = $seasonRepository->findSeasonInPeriod(new \DateTimeImmutable('2022-10-03'));
 
         $this->assertEquals('2022', $season2022->getId());
 
@@ -29,7 +29,7 @@ class CalculatorTest extends \Codeception\Test\Unit
         $prediction = $calculatorManager->calculatePossibleWin($season2022);
 
         $this->assertNotNull($prediction);
-        /** @var \App\Document\Prediction $prediction */
+        /** @var \App\Entity\Prediction $prediction */
         $this->assertEquals('1', $prediction->getDriverId());
         $this->assertNotEmpty($prediction->getComparisons());
         $this->assertEquals(40, count($prediction->getComparisons()));

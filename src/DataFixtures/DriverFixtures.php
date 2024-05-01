@@ -1,9 +1,9 @@
 <?php
 
-namespace App\DataFixtures\MongoDB;
+namespace App\DataFixtures;
 
-use App\Document\Driver;
-use Doctrine\Bundle\MongoDBBundle\Fixture\Fixture;
+use App\Entity\Driver;
+use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 

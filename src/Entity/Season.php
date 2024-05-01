@@ -1,38 +1,39 @@
 <?php
 
-namespace App\Document;
+namespace App\Entity;
 
 use App\Repository\SeasonRepository;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use Doctrine\ORM\Mapping as ORM;
 
-#[MongoDB\Document(repositoryClass: SeasonRepository::class)]
+#[ORM\Entity(repositoryClass: SeasonRepository::class)]
 class Season
 {
-    #[MongoDB\Id(type: "string", strategy: "none")]
-    private string $id;
+    #[ORM\Id]
+    #[ORM\Column(type: "string")]
+    protected ?string $id;
 
-    #[MongoDB\Field(type: "date")]
-    private \DateTime $startsAt;
+    #[ORM\Column(type: "date")]
+    protected \DateTime $startsAt;
 
-    #[MongoDB\Field(type: "date")]
-    private \DateTime $endsAt;
+    #[ORM\Column(type: "date")]
+    protected \DateTime $endsAt;
 
-    #[MongoDB\Field(type: "int")]
-    private int $races;
+    #[ORM\Column(type: "integer")]
+    protected int $races;
 
-    #[MongoDB\Field(type: "int")]
-    private int $sprints;
+    #[ORM\Column(type: "integer")]
+    protected int $sprints;
 
-    #[MongoDB\Field(type: "int")]
-    private int $completedRaces = 0;
+    #[ORM\Column(type: "integer")]
+    protected int $completedRaces = 0;
 
-    #[MongoDB\Field(type: "int")]
-    private int $completedSprints = 0;
+    #[ORM\Column(type: "integer")]
+    protected int $completedSprints = 0;
 
-    #[MongoDB\Field(type: "string", nullable: true)]
-    private ?string $champion = null;
+    #[ORM\ManyToOne]
+    protected ?Driver $champion = null;
 
-    public function getId(): string
+    public function getId(): ?string
     {
         return $this->id;
     }
@@ -109,12 +110,12 @@ class Season
         return $this;
     }
 
-    public function getChampion(): ?string
+    public function getChampion(): ?Driver
     {
         return $this->champion;
     }
 
-    public function setChampion(?string $champion): static
+    public function setChampion(?Driver $champion): static
     {
         $this->champion = $champion;
         return $this;
