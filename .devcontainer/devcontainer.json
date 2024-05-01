@@ -1,11 +1,11 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
 // https://github.com/microsoft/vscode-dev-containers/tree/v0.245.2/containers/docker-existing-dockerfile
 {
-	"name": "calculator dev container",
+	"name": "f1 calculator",
 	"dockerComposeFile": [
 		"../docker-compose.yaml"
 	],
-	"service": "calculator",
+	"service": "backend",
 	"workspaceFolder": "/var/www/html",
 	"customizations": {
 		"settings": {
@@ -20,7 +20,9 @@
 				"valeryanm.vscode-phpsab",
 				"joelwmale.vscode-codeception",
 				"streetsidesoftware.code-spell-checker",
-				"phproberto.vscode-php-getters-setters"
+				"phproberto.vscode-php-getters-setters",
+				"SanderRonde.phpstan-vscode",
+				"ms-azuretools.vscode-docker"
 			]
 		}
 	},

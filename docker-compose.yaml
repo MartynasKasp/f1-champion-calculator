@@ -1,8 +1,8 @@
 version: '3.4'
 
 services:
-  calculator:
-    container_name: f1_calculator
+  backend:
+    container_name: f1_backend
     build:
       context: ./
       dockerfile: Dockerfile
