@@ -4,10 +4,9 @@ namespace App\DataFixtures;
 
 use App\Entity\Driver;
 use Doctrine\Bundle\FixturesBundle\Fixture;
-use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
-class DriverFixtures extends Fixture implements DependentFixtureInterface
+class DriverFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
@@ -40,10 +39,5 @@ class DriverFixtures extends Fixture implements DependentFixtureInterface
         $this->addReference('driver_63', $driver4);
 
         $manager->flush();
-    }
-
-    public function getDependencies()
-    {
-        return [SeasonFixtures::class];
     }
 }

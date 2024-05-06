@@ -20,6 +20,9 @@ class Prediction
     #[ORM\OneToMany(PredictionComparison::class, mappedBy: "id")]
     protected Collection $comparisons;
 
+    #[ORM\ManyToOne]
+    protected Race $race;
+
     public function __construct()
     {
         $this->setComparisons(new ArrayCollection());
@@ -30,7 +33,7 @@ class Prediction
         return $this->id;
     }
 
-    public function setDriver(Driver $driver): self
+    public function setDriver(Driver $driver): static
     {
         $this->driver = $driver;
         return $this;
@@ -46,15 +49,26 @@ class Prediction
         return $this->comparisons;
     }
 
-    public function addComparison($comparison): self
+    public function addComparison($comparison): static
     {
         $this->comparisons->add($comparison);
         return $this;
     }
 
-    public function setComparisons($comparisons): self
+    public function setComparisons($comparisons): static
     {
         $this->comparisons = $comparisons;
+        return $this;
+    }
+
+    public function getRace(): Race
+    {
+        return $this->race;
+    }
+
+    public function setRace(Race $race): static
+    {
+        $this->race = $race;
         return $this;
     }
 }

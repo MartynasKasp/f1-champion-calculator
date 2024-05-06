@@ -64,7 +64,7 @@ class RaceResult
         return $this->driver;
     }
 
-    public function setDriverId(Driver $driver): static
+    public function setDriver(Driver $driver): static
     {
         $this->driver = $driver;
         return $this;

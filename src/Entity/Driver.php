@@ -2,9 +2,10 @@
 
 namespace App\Entity;
 
+use App\Repository\DriverRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: DriverRepository::class)]
 class Driver
 {
     #[ORM\Id]

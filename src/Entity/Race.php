@@ -2,9 +2,10 @@
 
 namespace App\Entity;
 
+use App\Repository\RaceRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity] //(repositoryClass: TeamRepository::class)]
+#[ORM\Entity(repositoryClass: RaceRepository::class)]
 class Race
 {
     #[ORM\Id]
@@ -28,7 +29,10 @@ class Race
     protected bool $sprintRace = false;
 
     #[ORM\ManyToOne]
-    private ?Season $season = null;
+    protected ?Season $season = null;
+
+    #[ORM\Column(type: "string")]
+    protected string $grandPrix;
 
     public function getId(): ?string
     {
@@ -98,6 +102,17 @@ class Race
     public function setSprintRace(bool $sprintRace): static
     {
         $this->sprintRace = $sprintRace;
+        return $this;
+    }
+
+    public function getGrandPrix(): string
+    {
+        return $this->grandPrix;
+    }
+
+    public function setGrandPrix(string $grandPrix): static
+    {
+        $this->grandPrix = $grandPrix;
         return $this;
     }
 }

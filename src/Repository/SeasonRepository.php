@@ -4,7 +4,6 @@ namespace App\Repository;
 
 use App\Entity\Season;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Collections\ArrayCollection;
 
 class SeasonRepository extends ServiceEntityRepository
 {
@@ -18,7 +17,7 @@ class SeasonRepository extends ServiceEntityRepository
         $date = new \DateTimeImmutable();
 
         return $this->createQueryBuilder('s')
-            ->where('id = :year')
+            ->where('s.id = :year')
             ->setParameter('year', $date->format('Y'))
             ->getQuery()
             ->getOneOrNullResult();
@@ -27,8 +26,8 @@ class SeasonRepository extends ServiceEntityRepository
     public function findSeasonInPeriod(\DateTimeImmutable $date): ?\App\Entity\Season
     {
         return $this->createQueryBuilder('s')
-            ->where('startsAt >= :date')
-            ->andWhere('endsAt <= :date')
+            ->where('s.startsAt <= :date')
+            ->andWhere('s.endsAt >= :date')
             ->setParameter('date', $date)
             ->getQuery()
             ->getOneOrNullResult();

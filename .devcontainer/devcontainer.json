@@ -22,7 +22,8 @@
 				"streetsidesoftware.code-spell-checker",
 				"phproberto.vscode-php-getters-setters",
 				"SanderRonde.phpstan-vscode",
-				"ms-azuretools.vscode-docker"
+				"ms-azuretools.vscode-docker",
+				"Gruntfuggly.todo-tree"
 			]
 		}
 	},

@@ -14,9 +14,8 @@ class DriverManager
 
     public function getDriverById(string $id): ?Driver
     {
-        return null;
-        // /** @var \App\Repository\DriverRepository $driverRepo */
-        // $driverRepo = $this->documentManager->getRepository(Driver::class);
-        // return $driverRepo->find($id);
+        /** @var \App\Repository\DriverRepository $driverRepo */
+        $driverRepo = $this->entityManager->getRepository(Driver::class);
+        return $driverRepo->find($id);
     }
 }

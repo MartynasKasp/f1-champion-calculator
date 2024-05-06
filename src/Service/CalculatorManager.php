@@ -2,10 +2,11 @@
 
 namespace App\Service;
 
-use App\Entity\Driver;
 use App\Entity\Prediction;
 use App\Entity\PredictionComparison;
+use App\Entity\Race;
 use App\Entity\Season;
+use App\Model\DTO\RaceResultDTO;
 use App\Trait\LoggerInjector;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -99,16 +100,16 @@ class CalculatorManager
             return null;
         }
 
-        /** @var \App\Entity\Driver $leadDriver */
         $leadDriver = array_shift($drivers);
         $relevantDrivers = array_filter(
             $drivers,
-            fn (\App\Entity\Driver $driver) => (
-                $driver->getSeasonPoints() + $maxPointsLeftForGrab > $leadDriver->getSeasonPoints()
+            fn (RaceResultDTO $driver) => (
+                $driver->seasonPoints + $maxPointsLeftForGrab > $leadDriver->seasonPoints
             )
         );
 
         return $this->checkWinConditions(
+            $season,
             $leadDriver,
             $relevantDrivers,
             $seasonRacesLeft,
@@ -119,13 +120,15 @@ class CalculatorManager
     /**
      * Check win conditions for upcoming race
      *
-     * @param Driver $leadDriver            Drivers standings leader
-     * @param Driver[] $relevantDrivers     Drivers still in contention
+     * @param Season $season                Season
+     * @param RaceResultDTO $leadDriver            Drivers standings leader
+     * @param RaceResultDTO[] $relevantDrivers     Drivers still in contention
      * @param int $racesRemaining           Remaining races in season
      * @param int $sprintsRemaining         Remaining sprints in season
      */
     private function checkWinConditions(
-        Driver $leadDriver,
+        Season $season,
+        RaceResultDTO $leadDriver,
         array $relevantDrivers,
         int $racesRemaining,
         int $sprintsRemaining
@@ -133,19 +136,31 @@ class CalculatorManager
         if (count($relevantDrivers) == 0) {
             throw new \Exception('Unexpected empty relevantDrivers');
         }
-        // TODO need to adjust $sprintsRemaining if it is a sprint weekend
 
         $pointsGapNeeded = $this->calculateAvailablePoints($racesRemaining - 1, $sprintsRemaining);
-        $driversPointsDifference = $leadDriver->getSeasonPoints() - $relevantDrivers[0]->getSeasonPoints();
+        $driversPointsDifference = $leadDriver->seasonPoints - $relevantDrivers[0]->seasonPoints;
+
+        /** @var \App\Repository\RaceRepository $raceRepository */
+        $raceRepository = $this->entityManager->getRepository(Race::class);
+        $nextSprintRace = $raceRepository->getNextRaceForSeason($season, true);
+        $nextRace = $raceRepository->getNextRaceForSeason($season);
+
+        $maximumPoints = self::POINTS_RACE_MAX;
+        if (null !== $nextSprintRace && $nextSprintRace->getDate() < $nextRace->getDate()) {
+            $maximumPoints = self::POINTS_SPRINT_P1;
+            $nextRace = $nextSprintRace;
+        }
 
         // Check if the standings leader can possibly get a win during the current weekend
-        if ($driversPointsDifference + self::POINTS_RACE_MAX < $pointsGapNeeded) {
-            // Lead driver cannot achieve a win yet even with P1 + Fastest Lap (and sprint win TODO)
+        if ($driversPointsDifference + $maximumPoints < $pointsGapNeeded) {
+            // Lead driver cannot achieve a win yet even with P1 + Fastest Lap
             return null;
         }
 
         $prediction = new Prediction();
-        $prediction->setDriver($leadDriver);
+        $prediction
+            ->setDriver($leadDriver->driver)
+            ->setRace($nextRace);
 
         $this->checkWinConditionForPosition(
             $leadDriver,
@@ -163,8 +178,8 @@ class CalculatorManager
     /**
      * Recursively check leading driver's winning condition for every point scoring race position
      *
-     * @param Driver   $leader          Standings leader
-     * @param Driver[] $contenders      Drivers still in contention
+     * @param RaceResultDTO   $leader          Standings leader
+     * @param RaceResultDTO[] $contenders      Drivers still in contention
      * @param int $pointsGapNeeded      How many points does a leader need to become the champion
      * @param Prediction $prediction    Calculated predictions
      * @param int $position             Standings leader's predicted race finishing position
@@ -172,51 +187,81 @@ class CalculatorManager
      * @return Prediction
      */
     private function checkWinConditionForPosition(
-        Driver $leader,
+        RaceResultDTO $leader,
         array $contenders,
         int $pointsGapNeeded,
         Prediction $prediction,
         int $position = 1,
     ): Prediction {
-        // TODO: handle sprint race weekends
+        $isSprint = $prediction->getRace()->isSprintRace();
 
-        if ($position > count(self::getRacePointsForFinish())) {
+        if (false === $isSprint && $position > count(self::getRacePointsForFinish())) {
+            return $prediction;
+        } elseif ($isSprint && $position > count(self::getSprintPointsForFinish())) {
             return $prediction;
         }
 
-        $predictedLeaderPoints = self::getRacePointsForFinish()[$position];
-        foreach ($contenders as $contender) {
-            // Checking finishing position WITH fastest lap
-            [$dropOutPosition, $_] = $this->checkHighestPositionToDropOut(
-                $leader->getSeasonPoints() + $predictedLeaderPoints,
-                $position,
-                $contender,
-                $pointsGapNeeded,
-                true
-            );
-            $comparison = new PredictionComparison();
-            $comparison
-                ->setLeaderPosition($position)
-                ->setLeaderFL(true)
-                ->setContender($contender)
-                ->setHighestPosition($dropOutPosition);
-            $prediction->addComparison($comparison);
+        $predictedLeaderPoints = false === $isSprint
+            ? self::getRacePointsForFinish()[$position]
+            : self::getSprintPointsForFinish()[$position];
 
-            // Checking finishing position WITHOUT fastest lap
-            [$dropOutPosition, $withoutFL] = $this->checkHighestPositionToDropOut(
-                $leader->getSeasonPoints() + $predictedLeaderPoints,
-                $position,
-                $contender,
-                $pointsGapNeeded
-            );
-            $comparison = new PredictionComparison();
-            $comparison
-                ->setLeaderPosition($position)
-                ->setLeaderFL(false)
-                ->setContender($contender)
-                ->setHighestPosition($dropOutPosition)
-                ->setWithoutFL($withoutFL);
-            $prediction->addComparison($comparison);
+        foreach ($contenders as $contender) {
+            // Checking for normal race
+            if (false === $isSprint) {
+                // Checking finishing position WITH fastest lap
+                [$dropOutPosition, $_] = $this->checkHighestPositionToDropOut(
+                    $leader->seasonPoints + $predictedLeaderPoints,
+                    $position,
+                    $contender,
+                    $pointsGapNeeded,
+                    true
+                );
+                $comparison = new PredictionComparison();
+                $comparison
+                    ->setLeaderPosition($position)
+                    ->setLeaderFL(true)
+                    ->setContender($contender->driver)
+                    ->setHighestPosition($dropOutPosition);
+
+                $this->entityManager->persist($comparison);
+                $prediction->addComparison($comparison);
+
+                // Checking finishing position WITHOUT fastest lap
+                [$dropOutPosition, $withoutFL] = $this->checkHighestPositionToDropOut(
+                    $leader->seasonPoints + $predictedLeaderPoints,
+                    $position,
+                    $contender,
+                    $pointsGapNeeded
+                );
+                $comparison = new PredictionComparison();
+                $comparison
+                    ->setLeaderPosition($position)
+                    ->setLeaderFL(false)
+                    ->setContender($contender->driver)
+                    ->setHighestPosition($dropOutPosition)
+                    ->setWithoutFL($withoutFL);
+
+                $this->entityManager->persist($comparison);
+                $prediction->addComparison($comparison);
+            // Checking for sprint race
+            } else {
+                [$dropOutPosition, $withoutFL] = $this->checkHighestPositionToDropOut(
+                    $leader->seasonPoints + $predictedLeaderPoints,
+                    $position,
+                    $contender,
+                    $pointsGapNeeded
+                );
+                $comparison = new PredictionComparison();
+                $comparison
+                    ->setLeaderPosition($position)
+                    ->setLeaderFL(false)
+                    ->setContender($contender->driver)
+                    ->setHighestPosition($dropOutPosition)
+                    ->setWithoutFL(true);
+
+                $this->entityManager->persist($comparison);
+                $prediction->addComparison($comparison);
+            }
         }
 
         return $this->checkWinConditionForPosition(
@@ -228,10 +273,13 @@ class CalculatorManager
         );
     }
 
+    /**
+     * @return array Two values. First being position and second a flag if with Fastest Lap
+     */
     private function checkHighestPositionToDropOut(
         float $predictedLeaderPoints,
         int $leaderPosition,
-        Driver $contender,
+        RaceResultDTO $contender,
         int $maxPointsLeft,
         bool $withFastest = false
     ): array {
@@ -244,7 +292,7 @@ class CalculatorManager
 
         $i = 1;
         foreach ($availableFinishingPositions as $position => $points) {
-            if (($pointsDiff = ($predictedLeaderPoints - ($contender->getSeasonPoints() + $points))) > $maxPointsLeft) {
+            if (($pointsDiff = ($predictedLeaderPoints - ($contender->seasonPoints + $points))) > $maxPointsLeft) {
                 if ($i === 1) {
                     return [-1, false];
                 }

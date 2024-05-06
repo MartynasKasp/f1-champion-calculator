@@ -13,14 +13,18 @@ class RaceResultRepository extends ServiceEntityRepository
         parent::__construct($registry, RaceResult::class);
     }
 
-    public function getStandingsForSeason(Season $season)
+    public function getStandingsForSeason(Season $season): array
     {
-        // TODO aggregate points
-        return $this->createQueryBuilder('r')
-            ->where('season = :season')
+        return $this->createQueryBuilder('rr')
+            ->select([
+                'SUM(rr.points) as seasonPoints',
+                'IDENTITY(rr.driver) as driverId',
+            ])
+            ->where('rr.season = :season')
+            ->groupBy('driverId')
+            ->addOrderBy('seasonPoints', 'DESC')
             ->setParameter('season', $season)
-            ->addOrderBy('points', 'DESC')
             ->getQuery()
-            ->execute();
+            ->getArrayResult();
     }
 }

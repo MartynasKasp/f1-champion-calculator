@@ -12,11 +12,11 @@ class Season
     #[ORM\Column(type: "string")]
     protected ?string $id;
 
-    #[ORM\Column(type: "date")]
-    protected \DateTime $startsAt;
+    #[ORM\Column(type: "date_immutable")]
+    protected \DateTimeImmutable $startsAt;
 
-    #[ORM\Column(type: "date")]
-    protected \DateTime $endsAt;
+    #[ORM\Column(type: "date_immutable")]
+    protected \DateTimeImmutable $endsAt;
 
     #[ORM\Column(type: "integer")]
     protected int $races;
@@ -44,23 +44,23 @@ class Season
         return $this;
     }
 
-    public function getStartsAt(): \DateTime
+    public function getStartsAt(): \DateTimeImmutable
     {
         return $this->startsAt;
     }
 
-    public function setStartsAt(\DateTime $startsAt): static
+    public function setStartsAt(\DateTimeImmutable $startsAt): static
     {
         $this->startsAt = $startsAt;
         return $this;
     }
 
-    public function getEndsAt(): \DateTime
+    public function getEndsAt(): \DateTimeImmutable
     {
         return $this->endsAt;
     }
 
-    public function setEndsAt(\DateTime $endsAt): static
+    public function setEndsAt(\DateTimeImmutable $endsAt): static
     {
         $this->endsAt = $endsAt;
         return $this;

@@ -90,7 +90,10 @@
             "vendor/bin/phpcs"
         ],
         "test": [
-            "php bin/console doctrine:mongodb:fixtures:load --no-interaction --env=test",
+            "php bin/console doctrine:database:drop --force --env=test || echo 'db does not exist'",
+            "php bin/console doctrine:database:create --env=test || echo 'db exists'",
+            "php bin/console doctrine:migrations:migrate --env=test --no-interaction",
+            "php bin/console doctrine:fixtures:load --no-interaction --env=test",
             "vendor/bin/codecept run"
         ],
         "analyse": [
@@ -109,6 +112,7 @@
     "require-dev": {
         "codeception/codeception": "^5.0",
         "codeception/module-asserts": "^3.0",
+        "codeception/module-doctrine": "^3.1",
         "codeception/module-mongodb": "^3.0",
         "codeception/module-phpbrowser": "*",
         "codeception/module-symfony": "^3.1",
