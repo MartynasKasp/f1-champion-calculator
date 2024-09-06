@@ -1,0 +1,6 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    Next race: {{ nextRace.grandPrix }}
+    {{ nextRace.date|date('Y-m-d') }}
+{% endblock %}
