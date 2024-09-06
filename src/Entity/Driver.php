@@ -22,9 +22,6 @@ class Driver
     #[ORM\ManyToOne]
     protected ?Team $team = null;
 
-    #[ORM\Column(type: "float")]
-    protected float $seasonPoints = 0;
-
     public function getId(): ?string
     {
         return $this->id;
@@ -60,23 +57,6 @@ class Driver
     public function setTeam(?Team $team): static
     {
         $this->team = $team;
-        return $this;
-    }
-
-    public function getSeasonPoints(): float
-    {
-        return $this->seasonPoints;
-    }
-
-    public function setSeasonPoints(float $seasonPoints): static
-    {
-        $this->seasonPoints = $seasonPoints;
-        return $this;
-    }
-
-    public function addSeasonPoints(float $seasonPoints): static
-    {
-        $this->seasonPoints += $seasonPoints;
         return $this;
     }
 }

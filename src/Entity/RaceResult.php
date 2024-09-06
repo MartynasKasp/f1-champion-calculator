@@ -8,6 +8,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: RaceResultRepository::class)]
 class RaceResult
 {
+    const RESULT_STATUS_DNF = 'DNF';
+
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: "SEQUENCE")]
     #[ORM\Column(type: "string")]

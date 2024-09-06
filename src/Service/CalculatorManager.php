@@ -142,13 +142,11 @@ class CalculatorManager
 
         /** @var \App\Repository\RaceRepository $raceRepository */
         $raceRepository = $this->entityManager->getRepository(Race::class);
-        $nextSprintRace = $raceRepository->getNextRaceForSeason($season, true);
         $nextRace = $raceRepository->getNextRaceForSeason($season);
 
         $maximumPoints = self::POINTS_RACE_MAX;
-        if (null !== $nextSprintRace && $nextSprintRace->getDate() < $nextRace->getDate()) {
+        if ($nextRace->isSprintRace()) {
             $maximumPoints = self::POINTS_SPRINT_P1;
-            $nextRace = $nextSprintRace;
         }
 
         // Check if the standings leader can possibly get a win during the current weekend

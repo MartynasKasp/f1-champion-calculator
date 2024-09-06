@@ -51,4 +51,40 @@ class CalculatorTest extends \Codeception\Test\Unit
         $this->assertEquals('11', $prediction->getComparisons()[25]->getHighestPosition());
         $this->assertEquals('11', $prediction->getComparisons()[27]->getHighestPosition());
     }
+
+    public function testFor2023Season()
+    {
+        // Fixtures are set to simulate results before Qatar GP Sprint Race in 2023
+        // Calculates predictions for Qatar GP Sprint Race in 2023
+
+        /** @var EntityManagerInterface $entityManager */
+        $entityManager = $this->tester->grabService(EntityManagerInterface::class);
+        /** @var \App\Repository\SeasonRepository $seasonRepository */
+        $seasonRepository = $entityManager->getRepository(Season::class);
+        $season = $seasonRepository->findSeasonInPeriod(new \DateTimeImmutable('2023-10-01'));
+
+        $this->assertNotNull($season);
+        $this->assertEquals('2023', $season->getId());
+
+        /** @var CalculatorManager $calculatorManager */
+        $calculatorManager = $this->tester->grabService(CalculatorManager::class);
+        $prediction = $calculatorManager->calculatePossibleWin($season);
+
+        $this->assertNotNull($prediction);
+        /** @var \App\Entity\Prediction $prediction */
+        $this->assertEquals('1', $prediction->getDriver()->getNumber());
+        $this->assertNotEmpty($prediction->getComparisons());
+        $this->assertEquals(8, count($prediction->getComparisons()));
+
+        $this->assertEquals('11', $prediction->getComparisons()[0]->getContender()->getNumber());
+
+        $this->assertEquals('-1', $prediction->getComparisons()[0]->getHighestPosition());
+        $this->assertEquals('-1', $prediction->getComparisons()[1]->getHighestPosition());
+        $this->assertEquals('-1', $prediction->getComparisons()[2]->getHighestPosition());
+        $this->assertEquals('-1', $prediction->getComparisons()[3]->getHighestPosition());
+        $this->assertEquals('-1', $prediction->getComparisons()[4]->getHighestPosition());
+        $this->assertEquals('-1', $prediction->getComparisons()[5]->getHighestPosition());
+        $this->assertEquals('1', $prediction->getComparisons()[6]->getHighestPosition());
+        $this->assertEquals('2', $prediction->getComparisons()[7]->getHighestPosition());
+    }
 }

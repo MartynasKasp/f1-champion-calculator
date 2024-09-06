@@ -79,6 +79,41 @@ class RaceResultFixtures extends Fixture implements DependentFixtureInterface
             ->setPoints(0);
         $manager->persist($raceResult17);
 
+        /**
+         * Season 2023, two races
+         * Starting from Singapore Grand Prix which was a 15th race of the season
+         */
+        $raceResult15 = (new RaceResult())
+            ->setRace($this->getReference('race_2023_singapore'))
+            ->setSeason($this->getReference('season_2023'))
+            ->setDriver($this->getReference('driver_1'))
+            ->setPosition(5)
+            ->setPoints(374);
+        $manager->persist($raceResult15);
+        $raceResult15 = (new RaceResult())
+            ->setRace($this->getReference('race_2023_singapore'))
+            ->setSeason($this->getReference('season_2023'))
+            ->setDriver($this->getReference('driver_11'))
+            ->setPosition(8)
+            ->setPoints(223);
+        $manager->persist($raceResult15);
+
+        $raceResult16 = (new RaceResult())
+            ->setRace($this->getReference('race_2023_japan'))
+            ->setSeason($this->getReference('season_2023'))
+            ->setDriver($this->getReference('driver_1'))
+            ->setPosition(1)
+            ->setPoints(26);
+        $manager->persist($raceResult16);
+        $raceResult16 = (new RaceResult())
+            ->setRace($this->getReference('race_2023_japan'))
+            ->setSeason($this->getReference('season_2023'))
+            ->setDriver($this->getReference('driver_11'))
+            ->setPosition(19)
+            ->setPoints(0)
+            ->setResultStatus(RaceResult::RESULT_STATUS_DNF);
+        $manager->persist($raceResult16);
+
         $manager->flush();
     }
 

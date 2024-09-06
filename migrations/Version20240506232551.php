@@ -22,7 +22,7 @@ final class Version20240506232551 extends AbstractMigration
         $this->addSql('CREATE SEQUENCE race_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE race_result_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE team_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
-        $this->addSql('CREATE TABLE driver (id VARCHAR(255) NOT NULL, number VARCHAR(255) NOT NULL, full_name VARCHAR(255) NOT NULL, season_points DOUBLE PRECISION NOT NULL, team_id VARCHAR DEFAULT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE TABLE driver (id VARCHAR(255) NOT NULL, number VARCHAR(255) NOT NULL, full_name VARCHAR(255) NOT NULL, team_id VARCHAR DEFAULT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE INDEX IDX_11667CD9296CD8AE ON driver (team_id)');
         $this->addSql('CREATE TABLE prediction (id VARCHAR(255) NOT NULL, driver_id VARCHAR DEFAULT NULL, race_id VARCHAR DEFAULT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE INDEX IDX_36396FC8C3423909 ON prediction (driver_id)');

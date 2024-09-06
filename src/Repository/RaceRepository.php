@@ -26,6 +26,7 @@ class RaceRepository extends ServiceEntityRepository
         return $qb
             ->orderBy('r.date', 'ASC')
             ->setParameter('season', $season)
+            ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();
     }
