@@ -1,0 +1,51 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block body %}
+    <div class="container pt-4">
+        <div class="row d-flex justify-content-center">
+            <div class="col-lg-4 col-md">
+                <section class="mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            {{ form_start(form) }}
+                                {{ form_errors(form) }}
+
+                                <div class="form-outline mb-4" data-mdb-input-init>
+                                    {{ form_widget(form.startsAt, { 'attr': { 'class': 'form-control form-control-lg' }}) }}
+                                    {{ form_label(form.startsAt, null, { 'label_attr': { 'class': 'form-label' }}) }}
+                                </div>
+
+                                <div class="form-outline mb-4" data-mdb-input-init>
+                                    {{ form_widget(form.endsAt, { 'attr': { 'class': 'form-control form-control-lg' }}) }}
+                                    {{ form_label(form.endsAt, null, { 'label_attr': { 'class': 'form-label' }}) }}
+                                </div>
+
+                                <div class="form-outline mb-4" data-mdb-input-init>
+                                    {{ form_widget(form.races, { 'attr': { 'class': 'form-control form-control-lg' }}) }}
+                                    {{ form_label(form.races, null, { 'label_attr': { 'class': 'form-label' }}) }}
+                                </div>
+
+                                <div class="form-outline mb-4" data-mdb-input-init>
+                                    {{ form_widget(form.sprints, { 'attr': { 'class': 'form-control form-control-lg' }}) }}
+                                    {{ form_label(form.sprints, null, { 'label_attr': { 'class': 'form-label' }}) }}
+                                </div>
+
+                                <div class="form-outline mb-4" data-mdb-input-init>
+                                    {{ form_widget(form.completedRaces, { 'attr': { 'class': 'form-control form-control-lg' }}) }}
+                                    {{ form_label(form.completedRaces, null, { 'label_attr': { 'class': 'form-label' }}) }}
+                                </div>
+
+                                <div class="form-outline mb-4" data-mdb-input-init>
+                                    {{ form_widget(form.completedSprints, { 'attr': { 'class': 'form-control form-control-lg' }}) }}
+                                    {{ form_label(form.completedSprints, null, { 'label_attr': { 'class': 'form-label' }}) }}
+                                </div>
+
+                                {{ form_widget(form.submit, { 'attr': { 'class': 'btn btn-primary'}}) }}
+                            {{ form_end(form) }}
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+{% endblock %}

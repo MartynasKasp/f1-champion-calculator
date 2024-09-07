@@ -32,4 +32,15 @@ class SeasonRepository extends ServiceEntityRepository
             ->getQuery()
             ->getOneOrNullResult();
     }
+
+    /**
+     * @return Season[]
+     */
+    public function getAllSeasonsSorted(string $order = 'desc'): array
+    {
+        return $this->createQueryBuilder('s')
+            ->orderBy('s.id', $order)
+            ->getQuery()
+            ->getArrayResult();
+    }
 }

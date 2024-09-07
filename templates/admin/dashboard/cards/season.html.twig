@@ -1,0 +1,31 @@
+<div class="col-lg-6 col-md-12">
+    <section class="mb-4">
+        <div class="card">
+            <div class="card-header">
+                Season
+            </div>
+            <div class="card-body">
+                <table class="table table-stripped">
+                    <tbody>
+                        <tr>
+                            <th>Starts on</th>
+                            <td>{{ season.startsAt|date('Y-m-d') }}</td>
+                        </tr>
+                        <tr>
+                            <th>Ends on</th>
+                            <td>{{ season.endsAt|date('Y-m-d') }}</td>
+                        </tr>
+                        <tr>
+                            <th>Races (completed)</th>
+                            <td>{{ season.races }} ({{ season.completedRaces }})</td>
+                        </tr>
+                        <tr>
+                            <th>Sprints races (completed)</th>
+                            <td>{{ season.sprints }} ({{ season.completedSprints}})</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</div>

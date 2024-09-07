@@ -1,0 +1,31 @@
+<div class="col-lg-6 col-md-12">
+    <section class="mb-4">
+        <div class="card">
+            <div class="card-header">
+                Standings
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Driver</th>
+                            <th>Points</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% set position = 1 %}
+                        {% for standing in standings %}
+                            <tr>
+                                <td>{{ position }}</td>
+                                <td>{{ standing.driver.fullName }}</td>
+                                <td>{{ standing.seasonPoints }}</td>
+                            </tr>
+                            {% set position = position + 1 %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</div>

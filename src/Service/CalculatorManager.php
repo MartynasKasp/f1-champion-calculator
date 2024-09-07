@@ -65,7 +65,7 @@ class CalculatorManager
 
     public function calculate(): void
     {
-        // TODO
+        // TODO TODO what?
         /** @var \App\Repository\SeasonRepository $seasonRepository */
         $seasonRepository = $this->entityManager->getRepository(Season::class);
         $currentSeason = $seasonRepository->getCurrentSeason();
@@ -89,16 +89,15 @@ class CalculatorManager
 
     public function calculatePossibleWin(Season $season): ?Prediction
     {
-        $drivers = $this->raceResultManager->getDriversByStandingsForSeason($season);
-
         $seasonRacesLeft = $season->getRaces() - $season->getCompletedRaces();
-        $seasonSprintsLeft = $season->getSprints() - $season->getCompletedSprints();
-        $maxPointsLeftForGrab = $this->calculateAvailablePoints($seasonRacesLeft, $seasonSprintsLeft);
-
         if (0 === $seasonRacesLeft) {
             $this->logger->error('No races for this season left.');
             return null;
         }
+
+        $drivers = $this->raceResultManager->getDriversByStandingsForSeason($season);
+        $seasonSprintsLeft = $season->getSprints() - $season->getCompletedSprints();
+        $maxPointsLeftForGrab = $this->calculateAvailablePoints($seasonRacesLeft, $seasonSprintsLeft);
 
         $leadDriver = array_shift($drivers);
         $relevantDrivers = array_filter(

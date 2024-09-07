@@ -21,4 +21,17 @@ class SeasonManager
     {
         return $this->seasonRepository->getCurrentSeason();
     }
+
+    /**
+     * @return Season[]
+     */
+    public function getAllSeasonsSorted(string $order = 'desc'): array
+    {
+        return $this->seasonRepository->getAllSeasonsSorted($order);
+    }
+
+    public function findSeasonById(string $id): ?Season
+    {
+        return $this->seasonRepository->find($id);
+    }
 }

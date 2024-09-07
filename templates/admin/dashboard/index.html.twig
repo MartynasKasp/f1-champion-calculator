@@ -1,19 +1,26 @@
 {% extends 'admin/base.html.twig' %}
 
 {% block body %}
-    <!--Main layout-->
-    <main style="margin-top: 58px">
-        <div class="container pt-4">
-            <!-- Section: Main chart -->
-            <section class="mb-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Next race: {{ nextRace.grandPrix }}</h5>
-                        <h6 class="card-subtitle  text-muted">{{ nextRace.date|date('Y-m-d') }}</h6>
+    <div class="container pt-4">
+        <div class="row">
+            <div class="col-lg col-md-12">
+                <section class="mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Next race: {{ nextRace.grandPrix }}</h5>
+                            <h6 class="card-subtitle text-muted">{{ nextRace.date|date('Y-m-d') }}</h6>
+                        </div>
                     </div>
-                </div>
-            </section>
-            <!-- Section: Main chart -->
+                </section>
+            </div>
         </div>
-    </main>
+
+        <div class="row">
+            {# Standings #}
+            {% include 'admin/dashboard/cards/standings.html.twig' %}
+
+            {# Season #}
+            {% include 'admin/dashboard/cards/season.html.twig' %}
+        </div>
+    </div>
 {% endblock %}

@@ -24,7 +24,7 @@ class RaceManager
         $seasonRepository = $this->entityManager->getRepository(Season::class);
 
         if (null === $season) {
-            $season = $seasonRepository->findSeasonInPeriod(new \DateTimeImmutable('2023-05-01'));
+            $season = $seasonRepository->findSeasonInPeriod(new \DateTimeImmutable());
         }
 
         return $this->raceRepository->getNextRaceForSeason($season, $sprintOnly);
