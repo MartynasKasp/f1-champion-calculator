@@ -13,6 +13,7 @@ class SeasonManager
 
     public function __construct(
         private EntityManagerInterface $entityManager,
+        private string $firstSeason = '2022'
     ) {
         $this->seasonRepository = $this->entityManager->getRepository(Season::class);
     }
@@ -33,5 +34,18 @@ class SeasonManager
     public function findSeasonById(string $id): ?Season
     {
         return $this->seasonRepository->find($id);
+    }
+
+    public function getAvailableSeasons(): array
+    {
+        $startDate = new \DateTimeImmutable($this->firstSeason . '-01-01');
+        $interval = \DateInterval::createFromDateString('1 year');
+
+        $availableYears = [];
+        foreach (new \DatePeriod($startDate, $interval, new \DateTimeImmutable()) as $year) {
+            array_unshift($availableYears, $year->format('Y'));
+        }
+
+        return $availableYears;
     }
 }

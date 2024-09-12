@@ -41,6 +41,6 @@ class SeasonRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('s')
             ->orderBy('s.id', $order)
             ->getQuery()
-            ->getArrayResult();
+            ->getResult();
     }
 }

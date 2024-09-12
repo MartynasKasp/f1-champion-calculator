@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Race;
 use App\Entity\Season;
+use App\Service\RaceManager;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 class RaceRepository extends ServiceEntityRepository
@@ -29,5 +30,37 @@ class RaceRepository extends ServiceEntityRepository
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();
+    }
+
+    /**
+     * @return Race[]
+     */
+    public function getFilteredRaces(
+        array $filters = [],
+        int $limit = 10,
+        int $offset = 0,
+    ): array {
+        $qb = $this->createQueryBuilder('r');
+
+        if (isset($filters['year']) && !empty($filters['year'])) {
+            $qb
+                ->where('r.season = :season')
+                ->setParameter('season', $filters['year']);
+        }
+
+        if (isset($filters['raceType']) && !empty($filters['raceType'])) {
+            if (RaceManager::TYPE_RACE === $filters['raceType']) {
+                $qb->andWhere('r.sprintRace = FALSE');
+            } elseif (RaceManager::TYPE_SPRINT === $filters['raceType']) {
+                $qb->andWhere('r.sprintRace = TRUE');
+            }
+        }
+
+        return $qb
+            ->orderBy('r.date', 'DESC')
+            ->setMaxResults($limit)
+            ->setFirstResult($offset)
+            ->getQuery()
+            ->getResult();
     }
 }

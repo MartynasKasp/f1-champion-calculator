@@ -23,7 +23,8 @@
 				"phproberto.vscode-php-getters-setters",
 				"SanderRonde.phpstan-vscode",
 				"ms-azuretools.vscode-docker",
-				"Gruntfuggly.todo-tree"
+				"Gruntfuggly.todo-tree",
+				"MykhailoKushnir.vscode-php-getter-setter",
 			]
 		}
 	},

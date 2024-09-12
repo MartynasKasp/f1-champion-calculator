@@ -19,7 +19,8 @@ class RaceFixtures extends Fixture implements DependentFixtureInterface
             ->setDate(new \DateTimeImmutable('2022-09-11'))
             ->setCompleted(true)
             ->setSeason($this->getReference('season_2022'))
-            ->setGrandPrix('Italy');
+            ->setGrandPrix('Italy')
+            ->setCircuit($this->getReference('circuit_monza'));
         $manager->persist($race16);
         $this->addReference('race_2022_italy', $race16);
 
@@ -27,15 +28,17 @@ class RaceFixtures extends Fixture implements DependentFixtureInterface
             ->setDate(new \DateTimeImmutable('2022-10-02'))
             ->setCompleted(true)
             ->setSeason($this->getReference('season_2022'))
-            ->setGrandPrix('Singapore');
-        $manager->persist($race17);
+            ->setGrandPrix('Singapore')
+            ->setCircuit($this->getReference('circuit_marina_bay'));
+            $manager->persist($race17);
         $this->addReference('race_2022_singapore', $race17);
 
         $race18 = (new Race())
             ->setDate(new \DateTimeImmutable('2022-10-09'))
             ->setSeason($this->getReference('season_2022'))
-            ->setGrandPrix('Japan');
-        $manager->persist($race18);
+            ->setGrandPrix('Japan')
+            ->setCircuit($this->getReference('circuit_suzuka'));
+            $manager->persist($race18);
         $this->addReference('race_2022_japan', $race18);
 
         /**
@@ -46,31 +49,35 @@ class RaceFixtures extends Fixture implements DependentFixtureInterface
             ->setDate(new \DateTimeImmutable('2023-09-17'))
             ->setCompleted(true)
             ->setSeason($this->getReference('season_2023'))
-            ->setGrandPrix('Singapore');
-        $manager->persist($race15);
+            ->setGrandPrix('Singapore')
+            ->setCircuit($this->getReference('circuit_marina_bay'));
+            $manager->persist($race15);
         $this->addReference('race_2023_singapore', $race15);
 
         $race16 = (new Race())
             ->setDate(new \DateTimeImmutable('2023-09-24'))
             ->setCompleted(true)
             ->setSeason($this->getReference('season_2023'))
-            ->setGrandPrix('Japan');
-        $manager->persist($race16);
+            ->setGrandPrix('Japan')
+            ->setCircuit($this->getReference('circuit_suzuka'));
+            $manager->persist($race16);
         $this->addReference('race_2023_japan', $race16);
 
         $race17S = (new Race())
             ->setDate(new \DateTimeImmutable('2023-10-07'))
             ->setSprintRace(true)
             ->setSeason($this->getReference('season_2023'))
-            ->setGrandPrix('Qatar');
-        $manager->persist($race17S);
+            ->setGrandPrix('Qatar Grand Prix')
+            ->setCircuit($this->getReference('circuit_lusail'));
+            $manager->persist($race17S);
         $this->addReference('race_2023_qatar_sprint', $race17S);
 
         $race17 = (new Race())
             ->setDate(new \DateTimeImmutable('2023-10-08'))
             ->setSeason($this->getReference('season_2023'))
-            ->setGrandPrix('Qatar');
-        $manager->persist($race17);
+            ->setGrandPrix('Qatar Grand Prix')
+            ->setCircuit($this->getReference('circuit_lusail'));
+            $manager->persist($race17);
         $this->addReference('race_2023_qatar', $race17);
 
         $manager->flush();

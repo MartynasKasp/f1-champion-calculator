@@ -7,7 +7,12 @@
                 <section class="mb-4">
                     <div class="card">
                         <div class="card-body">
-                            {{ form_start(form) }}
+                            {% if objectId is defined %}
+                                {{ form_start(form, { 'action': path('admin_seasons_edit', { id: objectId })}) }}
+                            {% else %}
+                                {{ form_start(form, { 'action': path('admin_seasons_create')}) }}
+                            {% endif %}
+
                                 {{ form_errors(form) }}
 
                                 <div class="form-outline mb-4" data-mdb-input-init>

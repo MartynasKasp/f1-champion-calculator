@@ -3,7 +3,8 @@
 namespace App\Controller\Admin;
 
 use App\Annotation\MenuItem;
-use App\Form\SeasonEditFormType;
+use App\Entity\Season;
+use App\Form\SeasonActionFormType;
 use App\Service\SeasonManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -18,12 +19,36 @@ class SeasonController extends AbstractController
     }
 
     #[Route(path: '/admin/seasons', name: 'admin_seasons_list')]
-    #[MenuItem(label: 'Seasons', icon: 'fas fa-globe fa-fw', priority: 20)]
+    #[MenuItem(label: 'Seasons', icon: 'fas fa-globe', priority: 20)]
     public function list(
         SeasonManager $seasonManager,
     ) {
+        // TODO pagination
         return $this->render('admin/seasons/index.html.twig', [
             'seasons' => $seasonManager->getAllSeasonsSorted(),
+        ]);
+    }
+
+    #[Route(path: '/admin/seasons/create', name: 'admin_seasons_create')]
+    public function create(
+        Request $request,
+    ) {
+        $season = new Season();
+        $form = $this->createForm(SeasonActionFormType::class, $season);
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $season->setId($season->getStartsAt()->format('Y'));
+
+            $this->entityManager->persist($season);
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'Season has been created successfully.');
+            return $this->redirectToRoute('admin_seasons_list');
+        }
+
+        return $this->render('admin/seasons/action.html.twig', [
+            'form' => $form->createView()
         ]);
     }
 
@@ -40,7 +65,7 @@ class SeasonController extends AbstractController
             return $this->redirectToRoute('admin_seasons_list');
         }
 
-        $form = $this->createForm(SeasonEditFormType::class, $season);
+        $form = $this->createForm(SeasonActionFormType::class, $season);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -50,8 +75,9 @@ class SeasonController extends AbstractController
             return $this->redirectToRoute('admin_seasons_list');
         }
 
-        return $this->render('admin/seasons/edit.html.twig', [
-            'form' => $form->createView()
+        return $this->render('admin/seasons/action.html.twig', [
+            'form' => $form->createView(),
+            'objectId' => $id
         ]);
     }
 }

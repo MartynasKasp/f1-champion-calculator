@@ -1,0 +1,41 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block body %}
+    <div class="container pt-4">
+        <div class="row d-flex justify-content-center">
+            <div class="col-lg-4 col-md">
+                <section class="mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            {% if objectId is defined %}
+                                {{ form_start(form, { 'action': path('admin_circuits_edit', { id: objectId })}) }}
+                            {% else %}
+                                {{ form_start(form, { 'action': path('admin_circuits_create')}) }}
+                            {% endif %}
+
+                                {{ form_errors(form) }}
+
+                                <div class="form-outline mb-4" data-mdb-input-init>
+                                    {{ form_widget(form.country, { 'attr': { 'class': 'form-control form-control-lg' }}) }}
+                                    {{ form_label(form.country, null, { 'label_attr': { 'class': 'form-label' }}) }}
+                                </div>
+
+                                <div class="form-outline mb-4" data-mdb-input-init>
+                                    {{ form_widget(form.circuit, { 'attr': { 'class': 'form-control form-control-lg' }}) }}
+                                    {{ form_label(form.circuit, null, { 'label_attr': { 'class': 'form-label' }}) }}
+                                </div>
+
+                                <div class="form-outline mb-4" data-mdb-input-init>
+                                    {{ form_widget(form.description, { 'attr': { 'class': 'form-control form-control-lg' }}) }}
+                                    {{ form_label(form.description, null, { 'label_attr': { 'class': 'form-label' }}) }}
+                                </div>
+
+                                {{ form_widget(form.submit, { 'attr': { 'class': 'btn btn-primary'}}) }}
+                            {{ form_end(form) }}
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+{% endblock %}

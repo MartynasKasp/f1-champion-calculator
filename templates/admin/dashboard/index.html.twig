@@ -2,17 +2,9 @@
 
 {% block body %}
     <div class="container pt-4">
-        <div class="row">
-            <div class="col-lg col-md-12">
-                <section class="mb-4">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">Next race: {{ nextRace.grandPrix }}</h5>
-                            <h6 class="card-subtitle text-muted">{{ nextRace.date|date('Y-m-d') }}</h6>
-                        </div>
-                    </div>
-                </section>
-            </div>
+        <div class="row row-cols-2">
+            {# Next race #}
+            {% include 'admin/dashboard/cards/next-race.html.twig' %}
         </div>
 
         <div class="row">

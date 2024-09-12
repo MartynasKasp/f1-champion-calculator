@@ -23,7 +23,7 @@ class Race
     protected bool $canceled = false;
 
     #[ORM\Column(type: "boolean")]
-    protected bool $fullDistance = true;
+    protected bool $fullDistance = false;
 
     #[ORM\Column(type: "boolean")]
     protected bool $sprintRace = false;
@@ -33,6 +33,9 @@ class Race
 
     #[ORM\Column(type: "string")]
     protected string $grandPrix;
+
+    #[ORM\ManyToOne]
+    protected ?Circuit $circuit = null;
 
     public function getId(): ?string
     {
@@ -113,6 +116,17 @@ class Race
     public function setGrandPrix(string $grandPrix): static
     {
         $this->grandPrix = $grandPrix;
+        return $this;
+    }
+
+    public function getCircuit(): ?Circuit
+    {
+        return $this->circuit;
+    }
+
+    public function setCircuit(Circuit $circuit): static
+    {
+        $this->circuit = $circuit;
         return $this;
     }
 }

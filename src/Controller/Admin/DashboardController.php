@@ -21,15 +21,14 @@ class DashboardController extends AbstractController
         path: '/admin/dashboard',
         name: 'admin_dashboard'
     )]
-    #[MenuItem(label: 'Dashboard', icon: 'fas fa-chart-area fa-fw', priority: 10)]
+    #[MenuItem(label: 'Dashboard', icon: 'fas fa-chart-area', priority: 10)]
     public function dashboard(
         RaceManager $raceManager,
         RaceResultManager $raceResultManager,
     ) {
         /** @var \App\Repository\SeasonRepository $seasonRepository */
         $seasonRepository = $this->entityManager->getRepository(Season::class);
-        // TODO date should be now
-        $season = $seasonRepository->findSeasonInPeriod(new \DateTimeImmutable('2023-05-01'));
+        $season = $seasonRepository->findSeasonInPeriod(new \DateTimeImmutable());
 
         return $this->render('admin/dashboard/index.html.twig', [
             'nextRace' => $raceManager->getNextRaceForSeason($season),
