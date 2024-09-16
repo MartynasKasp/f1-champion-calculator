@@ -19,12 +19,19 @@ RUN apt-get update && apt-get install -y \
         libapache2-mod-security2 \
         git \
         libxml2-dev \
+        #> Postgres
+        libpq-dev \
+        postgresql-client \
+        #< Postgres
     && docker-php-ext-install -j$(nproc) iconv \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) gd \
     && docker-php-ext-install bcmath \
     && docker-php-ext-enable bcmath \
-    && docker-php-ext-install zip
+    && docker-php-ext-install zip \
+    #> Postgres
+    && docker-php-ext-install pdo_pgsql
+    #< Postgres
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 RUN curl https://phar.phpunit.de/phpunit.phar --output phpunit.phar -L

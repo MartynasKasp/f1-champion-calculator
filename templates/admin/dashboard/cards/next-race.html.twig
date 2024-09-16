@@ -1,0 +1,38 @@
+<div class="col col-lg-8 col-md-6 mb-4">
+    <div class="card h-100">
+        <div class="card-body">
+            <h5 class="card-title">
+                Next race: {{ nextRace.grandPrix }}
+
+                {% if nextRace.sprintRace %}
+                    (sprint)
+                {% endif %}
+            </h5>
+            <h6 class="card-subtitle text-muted">
+                {{ nextRace.date|date('l, F j') }}, {% if nextRace.circuit is not empty %}{{ nextRace.circuit.circuit }}{% endif %}
+            </h6>
+            <p class="card-text mt-2">
+                {% if nextRace.circuit is not empty %}{{ nextRace.circuit.description }}{% endif %}
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="col col-lg-4 col-md-6 mb-4">
+    <div class="card h-100">
+        <div class="card-body">
+            <h5 class="card-title">Prediction for next race</h5>
+            <p class="card-text">
+                Prediction for this race has already been run.
+            </p>
+            <a
+                href="#"
+                class="btn btn-primary"
+                data-mdb-ripple-init
+            >
+                <i class="fas fa-chart-bar me-3"></i>
+                Run Prediction 
+            </a>
+        </div>
+    </div>
+</div>

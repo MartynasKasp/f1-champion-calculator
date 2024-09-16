@@ -2,33 +2,45 @@
 
 namespace App\Repository;
 
-use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
+use App\Entity\Season;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
-class SeasonRepository extends DocumentRepository
+class SeasonRepository extends ServiceEntityRepository
 {
-    public function getCurrentSeason(): ?\App\Document\Season
+    public function __construct(\Doctrine\Persistence\ManagerRegistry $registry)
     {
-        $date = new \DateTime();
-
-        $qb = $this->createQueryBuilder();
-        return $qb
-            ->field('startsAt')
-            ->lte($date)
-            ->field('endsAt')
-            ->gte($date)
-            ->getQuery()
-            ->getSingleResult();
+        parent::__construct($registry, Season::class);
     }
 
-    public function findSeasonInPeriod(\DateTime $date): ?\App\Document\Season
+    public function getCurrentSeason(): ?\App\Entity\Season
     {
-        $qb = $this->createQueryBuilder();
-        return $qb
-            ->field('startsAt')
-            ->lte($date)
-            ->field('endsAt')
-            ->gte($date)
+        $date = new \DateTimeImmutable();
+
+        return $this->createQueryBuilder('s')
+            ->where('s.id = :year')
+            ->setParameter('year', $date->format('Y'))
             ->getQuery()
-            ->getSingleResult();
+            ->getOneOrNullResult();
+    }
+
+    public function findSeasonInPeriod(\DateTimeImmutable $date): ?\App\Entity\Season
+    {
+        return $this->createQueryBuilder('s')
+            ->where('s.startsAt <= :date')
+            ->andWhere('s.endsAt >= :date')
+            ->setParameter('date', $date)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    /**
+     * @return Season[]
+     */
+    public function getAllSeasonsSorted(string $order = 'desc'): array
+    {
+        return $this->createQueryBuilder('s')
+            ->orderBy('s.id', $order)
+            ->getQuery()
+            ->getResult();
     }
 }

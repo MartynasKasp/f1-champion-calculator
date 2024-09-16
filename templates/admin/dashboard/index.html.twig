@@ -1,0 +1,18 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block body %}
+    <div class="container pt-4">
+        <div class="row row-cols-2">
+            {# Next race #}
+            {% include 'admin/dashboard/cards/next-race.html.twig' %}
+        </div>
+
+        <div class="row">
+            {# Standings #}
+            {% include 'admin/dashboard/cards/standings.html.twig' %}
+
+            {# Season #}
+            {% include 'admin/dashboard/cards/season.html.twig' %}
+        </div>
+    </div>
+{% endblock %}

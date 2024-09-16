@@ -2,8 +2,13 @@
 
 namespace App\Repository;
 
-use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
+use App\Entity\Driver;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
-class DriverRepository extends DocumentRepository
+class DriverRepository extends ServiceEntityRepository
 {
+    public function __construct(\Doctrine\Persistence\ManagerRegistry $registry)
+    {
+        parent::__construct($registry, Driver::class);
+    }
 }

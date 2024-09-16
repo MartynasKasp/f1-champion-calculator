@@ -1,0 +1,58 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block body %}
+    <div class="container pt-4">
+        <div class="row mb-4">
+            <div class="col">
+                <a href="{{ path('admin_seasons_create') }}" class="btn btn-primary" data-mdb-ripple-init>
+                    <i class="fas fa-plus me-3"></i>
+                    Create Season
+                </a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <section class="mb-4">
+                    <div class="card">
+                        <h5 class="card-header">Seasons</h5>
+                        <div class="card-body">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Starts on</th>
+                                        <th>Ends on</th>
+                                        <th>Races (completed)</th>
+                                        <th>Sprint races (completed)</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for season in seasons %}
+                                        <tr>
+                                            <td>{{ season.id }}</td>
+                                            <td>{{ season.startsAt|date('Y-m-d') }}</td>
+                                            <td>{{ season.endsAt|date('Y-m-d') }}</td>
+                                            <td>{{ season.races }} ({{ season.completedRaces }})</td>
+                                            <td>{{ season.sprints }} ({{ season.completedSprints }})</td>
+                                            <td>
+                                                <a
+                                                    href="{{ path('admin_seasons_edit', { id: season.id }) }}"
+                                                    class="btn btn-link btn-sm px-3"
+                                                    data-mdb-ripple-init
+                                                    data-ripple-color="primary"
+                                                >
+                                                    <i class="fas fa-lg fa-pen-to-square"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+{% endblock %}
