@@ -43,4 +43,9 @@ class SeasonRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function findSeasonById(string $season): ?Season
+    {
+        return $this->find($season);
+    }
 }

@@ -11,8 +11,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 #[AsCommand('app:calculate:current-season')]
 class CalculatePredictionsForCurrentSeasonCommand extends Command
 {
-    public function __construct(private CalculatorManager $calculatorManager)
-    {
+    public function __construct(
+        private CalculatorManager $calculatorManager,
+    ) {
         parent::__construct();
     }
 

@@ -16,13 +16,10 @@ class RaceResult
     protected ?string $id;
 
     #[ORM\ManyToOne]
-    protected Race $race;
-
-    #[ORM\ManyToOne]
     protected Season $season;
 
     #[ORM\ManyToOne]
-    protected Driver $driver;
+    protected ?Driver $driver;
 
     #[ORM\Column(type: "integer")]
     protected int $position;
@@ -30,21 +27,25 @@ class RaceResult
     #[ORM\Column(type: "float")]
     protected float $points;
 
-    // DNF, DNS, DSQ etc.
+    // Finished, Retired, +1 laps, etc.
     #[ORM\Column(type: "string", nullable: true)]
     protected ?string $resultStatus = null;
+
+    #[ORM\ManyToOne(inversedBy: 'results')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Race $race = null;
 
     public function getId(): ?string
     {
         return $this->id;
     }
 
-    public function getRace(): Race
+    public function getRace(): ?Race
     {
         return $this->race;
     }
 
-    public function setRace(Race $race): static
+    public function setRace(?Race $race): static
     {
         $this->race = $race;
         return $this;
@@ -61,7 +62,7 @@ class RaceResult
         return $this;
     }
 
-    public function getDriver(): Driver
+    public function getDriver(): ?Driver
     {
         return $this->driver;
     }
