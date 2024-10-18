@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Race;
 use App\Entity\RaceResult;
 use App\Entity\Season;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -26,5 +27,18 @@ class RaceResultRepository extends ServiceEntityRepository
             ->setParameter('season', $season)
             ->getQuery()
             ->getArrayResult();
+    }
+
+    /**
+     * @return RaceResult[]
+     */
+    public function getResultsForRace(Race $race): array
+    {
+        return $this->createQueryBuilder('rr')
+            ->where('rr.race = :race')
+            ->setParameter('race', $race)
+            ->orderBy('rr.position', 'ASC')
+            ->getQuery()
+            ->getResult();
     }
 }

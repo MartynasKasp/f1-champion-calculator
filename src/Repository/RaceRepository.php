@@ -63,4 +63,33 @@ class RaceRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function getRaceForSeasonByStage(string $season, int $stage): ?Race
+    {
+        $qb = $this->createQueryBuilder('r')
+            ->where('r.season = :season')
+            ->setParameter('season', $season)
+            ->andWhere('r.sprintRace = FALSE');
+
+        return $qb->orderBy('r.date', 'ASC')
+            ->setMaxResults(1)
+            ->setFirstResult($stage - 1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    public function getLastRaceByDate(\DateTimeImmutable $date): ?Race
+    {
+        $qb = $this->createQueryBuilder('r')
+            ->where('r.season = :season')
+            ->setParameter('season', $date->format('Y'))
+            ->andWhere('r.date <= :date')
+            ->setParameter('date', $date);
+
+        return $qb
+            ->orderBy('r.date', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }

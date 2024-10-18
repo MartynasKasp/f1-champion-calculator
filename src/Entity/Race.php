@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\RaceRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: RaceRepository::class)]
@@ -36,6 +38,17 @@ class Race
 
     #[ORM\ManyToOne]
     protected ?Circuit $circuit = null;
+
+    /**
+     * @var Collection<int, RaceResult>
+     */
+    #[ORM\OneToMany(targetEntity: RaceResult::class, mappedBy: 'race')]
+    private Collection $results;
+
+    public function __construct()
+    {
+        $this->results = new ArrayCollection();
+    }
 
     public function getId(): ?string
     {
@@ -127,6 +140,45 @@ class Race
     public function setCircuit(Circuit $circuit): static
     {
         $this->circuit = $circuit;
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, RaceResult>
+     */
+    public function getResults(): Collection
+    {
+        return $this->results;
+    }
+
+    public function setResults(Collection $results): static
+    {
+        $this->results = $results;
+        return $this;
+    }
+
+    public function addResult(RaceResult $result): static
+    {
+        if (!$this->results->contains($result)) {
+            $this->results->add($result);
+            $result
+                ->setRace($this)
+                ->setSeason($this->season)
+            ;
+        }
+
+        return $this;
+    }
+
+    public function removeResult(RaceResult $result): static
+    {
+        if ($this->results->removeElement($result)) {
+            // set the owning side to null (unless already changed)
+            if ($result->getRace() === $this) {
+                $result->setRace(null);
+            }
+        }
+
         return $this;
     }
 }
