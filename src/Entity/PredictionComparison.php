@@ -27,6 +27,9 @@ class PredictionComparison
     #[ORM\Column(type: "boolean")]
     protected bool $withoutFL = false;
 
+    #[ORM\ManyToOne(inversedBy: 'comparisons')]
+    protected ?Prediction $prediction = null;
+
     public function getId(): ?string
     {
         return $this->id;
@@ -84,6 +87,18 @@ class PredictionComparison
     public function setWithoutFL(bool $withoutFL): self
     {
         $this->withoutFL = $withoutFL;
+        return $this;
+    }
+
+    public function getPrediction(): ?Prediction
+    {
+        return $this->prediction;
+    }
+
+    public function setPrediction(?Prediction $prediction): static
+    {
+        $this->prediction = $prediction;
+
         return $this;
     }
 }

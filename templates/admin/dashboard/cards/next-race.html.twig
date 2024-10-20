@@ -2,7 +2,7 @@
     <div class="card h-100">
         <div class="card-body">
             <h5 class="card-title">
-                Next race: {{ nextRace.grandPrix }}
+                <a href="{{ path('admin_races_edit', { id: nextRace.id }) }}">Next race: {{ nextRace.grandPrix }}</a>
 
                 {% if nextRace.sprintRace %}
                     (sprint)
@@ -22,17 +22,20 @@
     <div class="card h-100">
         <div class="card-body">
             <h5 class="card-title">Prediction for next race</h5>
-            <p class="card-text">
-                Prediction for this race has already been run.
-            </p>
-            <a
-                href="#"
-                class="btn btn-primary"
-                data-mdb-ripple-init
-            >
-                <i class="fas fa-chart-bar me-3"></i>
-                Run Prediction 
-            </a>
+            {% if prediction is not null %}
+                <p class="card-text">
+                    Prediction for this race has already been run. {% if prediction.comparisons is not empty %}<a href="#">See prediction.{% else %}No predictions calculated.{% endif %}
+                </p>
+            {% else %}
+                <a
+                    href="{{ path('admin_prediction_calculate') }}"
+                    class="btn btn-primary"
+                    data-mdb-ripple-init
+                >
+                    <i class="fas fa-chart-bar me-3"></i>
+                    Run Prediction 
+                </a>
+            {% endif %}
         </div>
     </div>
 </div>

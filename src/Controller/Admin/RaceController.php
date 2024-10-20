@@ -95,25 +95,66 @@ class RaceController extends AbstractController
             return $this->redirectToRoute('admin_races_edit', ['id' => $id]);
         }
 
+        $raceResults = $race->getResults()->toArray();
+        uasort(
+            $raceResults,
+            fn (RaceResult $l, RaceResult $r) => $l->getPosition() > $r->getPosition() ? 1 : -1
+        );
+
         return $this->render('admin/races/action.html.twig', [
             'form' => $form->createView(),
-            'results' => $race->getResults(),
+            'results' => $raceResults,
             'objectId' => $id,
         ]);
     }
 
-    #[Route(path: '/admin/races/{race}/results/{result}', name: 'admin_races_edit_results')]
+    #[Route(path: '/admin/races/{raceId}/results/create', name: 'admin_races_create_results')]
+    public function createResults(
+        string $raceId,
+        Request $request,
+        RaceManager $raceManager,
+    ) {
+        $race = $raceManager->findRaceById($raceId);
+        if (null === $race) {
+            // TODO handle alerts
+            $this->addFlash('error', 'Race does not exist.');
+            return $this->redirectToRoute('admin_races_list');
+        }
+
+        $raceResult = new RaceResult();
+        $raceResult
+            ->setRace($race)
+            ->setSeason($race->getSeason());
+
+        $form = $this->createForm(RaceResultActionFormType::class, $raceResult, ['positionDisabled' => false]);
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->entityManager->persist($raceResult);
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'Race result has been added successfully.');
+            return $this->redirectToRoute('admin_races_edit', ['id' => $raceId]);
+        }
+
+        return $this->render('admin/races/results/action.html.twig', [
+            'form' => $form->createView(),
+            'raceId' => $raceId,
+        ]);
+    }
+
+    #[Route(path: '/admin/races/{raceId}/results/{resultId}', name: 'admin_races_edit_results')]
     public function editResults(
-        string $race,
-        string $result,
+        string $raceId,
+        string $resultId,
         Request $request,
         RaceResultManager $raceResultManager,
     ) {
-        $raceResult = $raceResultManager->findById($result);
+        $raceResult = $raceResultManager->findById($resultId);
         if (null === $raceResult) {
             // TODO handle alerts
             $this->addFlash('error', 'Race result does not exist.');
-            return $this->redirectToRoute('admin_races_edit', ['id' => $race]);
+            return $this->redirectToRoute('admin_races_edit', ['id' => $raceId]);
         }
 
         $form = $this->createForm(RaceResultActionFormType::class, $raceResult);
@@ -123,11 +164,13 @@ class RaceController extends AbstractController
             $this->entityManager->flush();
 
             $this->addFlash('success', 'Race result has been updated successfully.');
-            return $this->redirectToRoute('admin_races_edit', ['id' => $race]);
+            return $this->redirectToRoute('admin_races_edit', ['id' => $raceId]);
         }
 
         return $this->render('admin/races/results/action.html.twig', [
             'form' => $form->createView(),
+            'objectId' => $resultId,
+            'raceId' => $raceId,
         ]);
     }
 }

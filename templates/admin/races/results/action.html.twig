@@ -7,6 +7,11 @@
                 <section class="mb-4">
                     <div class="card">
                         <div class="card-body">
+                            {% if objectId is defined %}
+                                {{ form_start(form, { 'action': path('admin_races_edit_results', { raceId: raceId, resultId: objectId })}) }}
+                            {% else %}
+                                {{ form_start(form, { 'action': path('admin_races_create_results', { raceId: raceId })}) }}
+                            {% endif %}
                             {{ form_start(form) }}
                                 {{ form_errors(form) }}
 

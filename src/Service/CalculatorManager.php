@@ -6,6 +6,7 @@ use App\Entity\Prediction;
 use App\Entity\PredictionComparison;
 use App\Entity\Race;
 use App\Entity\Season;
+use App\Exception\SeasonNotFoundException;
 use App\Model\DTO\RaceResultDTO;
 use App\Trait\LoggerInjector;
 use Doctrine\ORM\EntityManagerInterface;
@@ -63,6 +64,9 @@ class CalculatorManager
         + ($sprintsRemaining * self::POINTS_SPRINT_P1);
     }
 
+    /**
+     * @throws SeasonNotFoundException
+     */
     public function calculate(): void
     {
         // TODO TODO what?
@@ -71,7 +75,8 @@ class CalculatorManager
         $currentSeason = $seasonRepository->getCurrentSeason();
 
         if (null === $currentSeason) {
-            throw new \Exception("Current season not found.");
+            $this->logger->error('Current season not found.');
+            throw new SeasonNotFoundException("Current season not found.");
         }
 
         if (null !== $currentSeason->getChampion()) {
@@ -91,7 +96,7 @@ class CalculatorManager
     {
         $seasonRacesLeft = $season->getRaces() - $season->getCompletedRaces();
         if (0 === $seasonRacesLeft) {
-            $this->logger->error('No races for this season left.');
+            $this->logger->info('No races for this season left.');
             return null;
         }
 
@@ -120,28 +125,43 @@ class CalculatorManager
      * Check win conditions for upcoming race
      *
      * @param Season $season                Season
-     * @param RaceResultDTO $leadDriver            Drivers standings leader
+     * @param RaceResultDTO|null $leadDriver            Drivers standings leader
      * @param RaceResultDTO[] $relevantDrivers     Drivers still in contention
      * @param int $racesRemaining           Remaining races in season
      * @param int $sprintsRemaining         Remaining sprints in season
      */
     private function checkWinConditions(
         Season $season,
-        RaceResultDTO $leadDriver,
+        ?RaceResultDTO $leadDriver,
         array $relevantDrivers,
         int $racesRemaining,
         int $sprintsRemaining
-    ): ?Prediction {
-        if (count($relevantDrivers) == 0) {
-            throw new \Exception('Unexpected empty relevantDrivers');
+    ): Prediction {
+        /** @var \App\Repository\RaceRepository $raceRepository */
+        $raceRepository = $this->entityManager->getRepository(Race::class);
+        $nextRace = $raceRepository->getNextRaceForSeason($season);
+
+        // Create empty prediction just to know that it has been run
+        $prediction = new Prediction();
+        $prediction->setRace($nextRace);
+        $this->entityManager->persist($prediction);
+
+        if (null === $leadDriver) {
+            $this->logger->info('No lead driver. Returning empty prediction.');
+
+            $this->entityManager->flush();
+            return $prediction;
+        }
+
+        if (0 == count($relevantDrivers)) {
+            $this->logger->info('No relevant drivers. Returning empty prediction.');
+
+            $this->entityManager->flush();
+            return $prediction;
         }
 
         $pointsGapNeeded = $this->calculateAvailablePoints($racesRemaining - 1, $sprintsRemaining);
         $driversPointsDifference = $leadDriver->seasonPoints - $relevantDrivers[0]->seasonPoints;
-
-        /** @var \App\Repository\RaceRepository $raceRepository */
-        $raceRepository = $this->entityManager->getRepository(Race::class);
-        $nextRace = $raceRepository->getNextRaceForSeason($season);
 
         $maximumPoints = self::POINTS_RACE_MAX;
         if ($nextRace->isSprintRace()) {
@@ -151,13 +171,13 @@ class CalculatorManager
         // Check if the standings leader can possibly get a win during the current weekend
         if ($driversPointsDifference + $maximumPoints < $pointsGapNeeded) {
             // Lead driver cannot achieve a win yet even with P1 + Fastest Lap
-            return null;
+            $this->logger->info('Lead driver cannot achieve a win yet. Returning empty prediction.');
+
+            $this->entityManager->flush();
+            return $prediction;
         }
 
-        $prediction = new Prediction();
-        $prediction
-            ->setDriver($leadDriver->driver)
-            ->setRace($nextRace);
+        $prediction->setDriver($leadDriver->driver);
 
         $this->checkWinConditionForPosition(
             $leadDriver,
@@ -166,7 +186,6 @@ class CalculatorManager
             $prediction
         );
 
-        $this->entityManager->persist($prediction);
         $this->entityManager->flush();
 
         return $prediction;

@@ -88,7 +88,7 @@
                                                 <td>{{ result.resultStatus }}</td>
                                                 <td>
                                                     <a
-                                                        href="{{ path('admin_races_edit_results', { race: objectId, result: result.id }) }}"
+                                                        href="{{ path('admin_races_edit_results', { raceId: objectId, resultId: result.id }) }}"
                                                         class="btn btn-link btn-sm px-3"
                                                         data-mdb-ripple-init
                                                         data-ripple-color="primary"
@@ -100,6 +100,14 @@
                                         {% endfor %}
                                     </tbody>
                                 </table>
+
+                                <a
+                                    href="{{ path('admin_races_create_results', { raceId: objectId }) }}"
+                                    class="btn btn-primary"
+                                    data-mdb-ripple-init
+                                >
+                                    <i class="fas fa-plus me-3"></i> Add Result
+                                </a>
                             </div>
                         </div>
                     </section>

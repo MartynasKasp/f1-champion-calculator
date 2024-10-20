@@ -2,6 +2,8 @@
 
 namespace Tests\Functional;
 
+use App\Entity\Race;
+use App\Entity\RaceResult;
 use App\Entity\Season;
 use App\Service\CalculatorManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -10,6 +12,52 @@ use Tests\Support\FunctionalTester;
 class CalculatorTest extends \Codeception\Test\Unit
 {
     protected FunctionalTester $tester;
+    protected EntityManagerInterface $entityManager;
+
+    protected function _before()
+    {
+        $this->entityManager = $this->tester->grabService(EntityManagerInterface::class);
+    }
+
+    public function testNoComparisons()
+    {
+        /** @var \App\Repository\RaceRepository */
+        $raceRepo = $this->entityManager->getRepository(Race::class);
+        /** @var \App\Repository\RaceResultRepository */
+        $raceResultRepo = $this->entityManager->getRepository(RaceResult::class);
+        /** @var \App\Repository\SeasonRepository */
+        $seasonRepo = $this->entityManager->getRepository(Season::class);
+
+        /** @var \App\Entity\Season */
+        $season22 = $seasonRepo->find('2022');
+        $season22->setCompletedRaces(0);
+
+        /** @var \App\Entity\Race */
+        $race16 = $raceRepo->findOneBy(['season' => '2022', 'grandPrix' => 'Italy']);
+        $race16->setCompleted(false);
+        $raceResults16 = $raceResultRepo->findBy(['race' => $race16->getId()]);
+
+        /** @var \App\Entity\Race */
+        $race17 = $raceRepo->findOneBy(['season' => '2022', 'grandPrix' => 'Singapore']);
+        $race17->setCompleted(false);
+        $raceResults17 = $raceResultRepo->findBy(['race' => $race17->getId()]);
+
+        foreach (array_merge($raceResults16, $raceResults17) as $result) {
+            $this->entityManager->remove($result);
+        }
+        $this->entityManager->flush();
+
+        /** @var \App\Repository\SeasonRepository $seasonRepository */
+        $seasonRepository = $this->entityManager->getRepository(Season::class);
+        $season2022 = $seasonRepository->findSeasonInPeriod(new \DateTimeImmutable('2022-10-03'));
+
+        /** @var CalculatorManager $calculatorManager */
+        $calculatorManager = $this->tester->grabService(CalculatorManager::class);
+        $prediction = $calculatorManager->calculatePossibleWin($season2022);
+
+        $this->assertNotNull($prediction);
+        $this->assertCount(0, $prediction->getComparisons());
+    }
 
     public function testFor2022Season()
     {
