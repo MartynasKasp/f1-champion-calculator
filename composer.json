@@ -105,6 +105,10 @@
         ],
         "analyse": [
             "vendor/bin/phpstan"
+        ],
+        "clear-db": [
+            "php bin/console doctrine:database:drop --force || echo 'db does not exist'",
+            "php bin/console doctrine:database:create || echo 'db exists'"
         ]
     },
     "conflict": {

@@ -27,17 +27,10 @@ class Prediction
     #[ORM\Column(type: "datetime_immutable", nullable: true)]
     protected ?\DateTimeImmutable $createdAt = null;
 
-    // /**
-    //  * @var Collection<int, PredictionComparison>
-    //  */
-    // #[ORM\OneToMany(targetEntity: PredictionComparison::class, mappedBy: 'prediction')]
-    // private Collection $stuff;
-
     public function __construct()
     {
         $this->setComparisons(new ArrayCollection());
         $this->createdAt = new \DateTimeImmutable();
-        // $this->stuff = new ArrayCollection();
     }
 
     public function getId(): ?string

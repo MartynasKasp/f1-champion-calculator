@@ -20,4 +20,10 @@ class PredictionRepository extends ServiceEntityRepository
             ->getQuery()
             ->getOneOrNullResult();
     }
+
+    // TODO filters
+    public function getFilteredPredictions(): array
+    {
+        return $this->findAll();
+    }
 }
