@@ -28,6 +28,11 @@ a.nav-link#navbarDropdownMenuLink {
     padding: 0;
 }
 
+table.StandingsTable__Container tr.StandingsTable__EliminationBorder {
+    border-top-width: 2px;
+    border-top-color: rgb(153, 26, 26);
+}
+
 /*
     Large (lg) screen size
 */

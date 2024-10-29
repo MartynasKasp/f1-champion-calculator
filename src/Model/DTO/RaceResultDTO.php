@@ -9,6 +9,7 @@ class RaceResultDTO
     public function __construct(
         public Driver $driver,
         public float $seasonPoints,
+        public ?float $diffToLeader,
     ) {
     }
 }

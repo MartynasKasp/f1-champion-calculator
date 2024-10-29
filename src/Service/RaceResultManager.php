@@ -7,22 +7,23 @@ use App\Entity\Race;
 use App\Entity\RaceResult;
 use App\Entity\Season;
 use App\Model\DTO\RaceResultDTO;
+use App\Repository\RaceResultRepository;
 use App\Trait\LoggerInjector;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
 
 class RaceResultManager
 {
     use LoggerInjector;
 
-    /** @var \App\Repository\RaceResultRepository */
-    protected EntityRepository $raceResultRepository;
+    protected RaceResultRepository $raceResultRepository;
 
     public function __construct(
         private EntityManagerInterface $entityManager,
         private \ErgastAPI\Connector $ergastConnector,
     ) {
-        $this->raceResultRepository = $this->entityManager->getRepository(RaceResult::class);
+        /** @var RaceResultRepository */
+        $repo = $this->entityManager->getRepository(RaceResult::class);
+        $this->raceResultRepository = $repo;
     }
 
     /**
@@ -34,14 +35,19 @@ class RaceResultManager
         $raceResultRepo = $this->entityManager->getRepository(RaceResult::class);
         /** @var \App\Repository\DriverRepository $driverRepo */
         $driverRepo = $this->entityManager->getRepository(Driver::class);
+        $results = $raceResultRepo->getStandingsForSeason($season);
 
-        return array_map(
-            fn ($item) => new RaceResultDTO(
-                driver: $driverRepo->find($item['driverId']),
-                seasonPoints: $item['seasonPoints'],
-            ),
-            $raceResultRepo->getStandingsForSeason($season)
-        );
+        $standings = [];
+        foreach ($results as $result) {
+            $diff = $results[0]['seasonPoints'] - $result['seasonPoints'];
+            $standings[] = new RaceResultDTO(
+                driver: $driverRepo->find($result['driverId']),
+                seasonPoints: $result['seasonPoints'],
+                diffToLeader: $diff > 0 ? $diff : null
+            );
+        }
+
+        return $standings;
     }
 
     public function findById(string $resultId): ?RaceResult

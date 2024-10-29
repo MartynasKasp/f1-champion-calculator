@@ -4,6 +4,8 @@ namespace App\Form;
 
 use App\Entity\Driver;
 use App\Entity\RaceResult;
+use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
@@ -19,10 +21,14 @@ class RaceResultActionFormType extends AbstractType
         $builder
             ->add('position', NumberType::class, [
                 'required' => false,
-                'disabled' => true,
+                'disabled' => $options['positionDisabled'],
             ])
             ->add('driver', EntityType::class, [
                 'class' => Driver::class,
+                'query_builder' => function (EntityRepository $er): QueryBuilder {
+                    return $er->createQueryBuilder('d')
+                        ->orderBy('d.number', 'ASC');
+                },
                 'choice_label' => function (Driver $driver): string {
                     return sprintf("#%s - %s", $driver->getNumber(), $driver->getFullName());
                 },
@@ -44,7 +50,8 @@ class RaceResultActionFormType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => RaceResult::class
+            'data_class' => RaceResult::class,
+            'positionDisabled' => true
         ]);
     }
 }

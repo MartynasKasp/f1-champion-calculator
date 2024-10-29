@@ -4,21 +4,22 @@ namespace App\Service;
 
 use App\Entity\Race;
 use App\Entity\Season;
+use App\Repository\RaceRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
 
 class RaceManager
 {
     const TYPE_RACE = 'Race';
     const TYPE_SPRINT = 'Sprint';
 
-    /** @var \App\Repository\RaceRepository */
-    protected EntityRepository $raceRepository;
+    protected RaceRepository $raceRepository;
 
     public function __construct(
         private EntityManagerInterface $entityManager,
     ) {
-        $this->raceRepository = $this->entityManager->getRepository(Race::class);
+        /** @var RaceRepository */
+        $repo = $this->entityManager->getRepository(Race::class);
+        $this->raceRepository = $repo;
     }
 
     public static function getAvailableTypes(): array
