@@ -46,7 +46,6 @@
                                                 <th>Season</th>
                                                 <th>Date</th>
                                                 <th>Grand Prix</th>
-                                                <th>Type</th>
                                                 <th>Actions</th>
                                             </tr>
                                         </thead>
@@ -55,24 +54,26 @@
                                                 <tr>
                                                     <td>{{ prediction.race.season.id }}</td>
                                                     <td>{{ prediction.createdAt|date('Y-m-d') }}</td>
-                                                    <td>{{ prediction.race.grandPrix }}</td>
+                                                    <td>
+                                                        {{ prediction.race.grandPrix }}{% if prediction.race.sprintRace %}, Sprint{% endif %}
+                                                    </td>
                                                     {# <td>
                                                         {% if race.sprintRace == true %}
                                                             Sprint
                                                         {% else %}
                                                             Race
                                                         {% endif %}
-                                                    </td>
+                                                    </td> #}
                                                     <td>
                                                         <a
-                                                            href="{{ path('admin_races_edit', { id: race.id }) }}"
+                                                            href="{{ path('admin_predictions_view', { id: prediction.id }) }}"
                                                             class="btn btn-link btn-sm px-3"
                                                             data-mdb-ripple-init
                                                             data-ripple-color="primary"
                                                         >
                                                             <i class="fas fa-lg fa-eye"></i>
                                                         </a>
-                                                    </td> #}
+                                                    </td>
                                                 </tr>
                                             {% endfor %}
                                         </tbody>

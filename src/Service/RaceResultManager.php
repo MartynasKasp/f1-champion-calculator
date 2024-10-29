@@ -7,22 +7,23 @@ use App\Entity\Race;
 use App\Entity\RaceResult;
 use App\Entity\Season;
 use App\Model\DTO\RaceResultDTO;
+use App\Repository\RaceResultRepository;
 use App\Trait\LoggerInjector;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
 
 class RaceResultManager
 {
     use LoggerInjector;
 
-    /** @var \App\Repository\RaceResultRepository */
-    protected EntityRepository $raceResultRepository;
+    protected RaceResultRepository $raceResultRepository;
 
     public function __construct(
         private EntityManagerInterface $entityManager,
         private \ErgastAPI\Connector $ergastConnector,
     ) {
-        $this->raceResultRepository = $this->entityManager->getRepository(RaceResult::class);
+        /** @var RaceResultRepository */
+        $repo = $this->entityManager->getRepository(RaceResult::class);
+        $this->raceResultRepository = $repo;
     }
 
     /**

@@ -58,4 +58,22 @@ class PredictionController extends AbstractController
             'predictions' => $predictions,
         ]);
     }
+
+    #[Route(
+        path: 'admin/predictions/{id}',
+        name: 'admin_predictions_view'
+    )]
+    public function view(
+        string $id,
+        PredictionManager $predictionManager,
+    ) {
+        $prediction = $predictionManager->findPredictionById($id);
+        if (null === $prediction) {
+            // TODO handle alerts
+            $this->addFlash('error', 'Prediction does not exist.');
+            return $this->redirectToRoute('admin_predictions_list');
+        }
+
+        return $this->render('admin/predictions/index.html.twig', []);
+    }
 }

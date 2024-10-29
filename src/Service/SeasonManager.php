@@ -3,19 +3,20 @@
 namespace App\Service;
 
 use App\Entity\Season;
+use App\Repository\SeasonRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
 
 class SeasonManager
 {
-    /** @var \App\Repository\SeasonRepository */
-    protected EntityRepository $seasonRepository;
+    protected SeasonRepository $seasonRepository;
 
     public function __construct(
         private EntityManagerInterface $entityManager,
         private string $firstSeason = '2022'
     ) {
-        $this->seasonRepository = $this->entityManager->getRepository(Season::class);
+        /** @var SeasonRepository */
+        $repo = $this->entityManager->getRepository(Season::class);
+        $this->seasonRepository = $repo;
     }
 
     public function getCurrentSeason(): ?Season

@@ -4,24 +4,30 @@ namespace App\Service;
 
 use App\Entity\Prediction;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
 
 class PredictionManager
 {
     /**
      * @var \App\Repository\PredictionRepository
      */
-    protected EntityRepository $repository;
+    protected $repository;
 
     public function __construct(
-        private EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager
     ) {
-        $this->repository = $entityManager->getRepository(Prediction::class);
+        /** @var \App\Repository\PredictionRepository $repo */
+        $repo = $entityManager->getRepository(Prediction::class);
+        $this->repository = $repo;
     }
 
     // TODO filters
     public function getFilteredPredictions(): array
     {
         return $this->repository->getFilteredPredictions();
+    }
+
+    public function findPredictionById(string $id): ?Prediction
+    {
+        return $this->repository->find($id);
     }
 }
