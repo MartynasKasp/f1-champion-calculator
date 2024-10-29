@@ -74,6 +74,10 @@ class PredictionController extends AbstractController
             return $this->redirectToRoute('admin_predictions_list');
         }
 
-        return $this->render('admin/predictions/index.html.twig', []);
+        $formattedPrediction = $predictionManager->getFormattedPredictionForDisplay($prediction);
+
+        return $this->render('admin/predictions/view.html.twig', [
+            'predictionDisplay' => $formattedPrediction,
+        ]);
     }
 }
