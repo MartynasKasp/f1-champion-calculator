@@ -57,22 +57,17 @@
                                                     <td>
                                                         {{ prediction.race.grandPrix }}{% if prediction.race.sprintRace %}, Sprint{% endif %}
                                                     </td>
-                                                    {# <td>
-                                                        {% if race.sprintRace == true %}
-                                                            Sprint
-                                                        {% else %}
-                                                            Race
-                                                        {% endif %}
-                                                    </td> #}
                                                     <td>
-                                                        <a
-                                                            href="{{ path('admin_predictions_view', { id: prediction.id }) }}"
-                                                            class="btn btn-link btn-sm px-3"
-                                                            data-mdb-ripple-init
-                                                            data-ripple-color="primary"
-                                                        >
-                                                            <i class="fas fa-lg fa-eye"></i>
-                                                        </a>
+                                                        {% if prediction.comparisons is not empty %}
+                                                            <a
+                                                                href="{{ path('admin_predictions_view', { id: prediction.id }) }}"
+                                                                class="btn btn-link btn-sm px-3"
+                                                                data-mdb-ripple-init
+                                                                data-ripple-color="primary"
+                                                            >
+                                                                <i class="fas fa-lg fa-eye"></i>
+                                                            </a>
+                                                        {% endif %}
                                                     </td>
                                                 </tr>
                                             {% endfor %}

@@ -35,14 +35,19 @@ class RaceResultManager
         $raceResultRepo = $this->entityManager->getRepository(RaceResult::class);
         /** @var \App\Repository\DriverRepository $driverRepo */
         $driverRepo = $this->entityManager->getRepository(Driver::class);
+        $results = $raceResultRepo->getStandingsForSeason($season);
 
-        return array_map(
-            fn ($item) => new RaceResultDTO(
-                driver: $driverRepo->find($item['driverId']),
-                seasonPoints: $item['seasonPoints'],
-            ),
-            $raceResultRepo->getStandingsForSeason($season)
-        );
+        $standings = [];
+        foreach ($results as $result) {
+            $diff = $results[0]['seasonPoints'] - $result['seasonPoints'];
+            $standings[] = new RaceResultDTO(
+                driver: $driverRepo->find($result['driverId']),
+                seasonPoints: $result['seasonPoints'],
+                diffToLeader: $diff > 0 ? $diff : null
+            );
+        }
+
+        return $standings;
     }
 
     public function findById(string $resultId): ?RaceResult

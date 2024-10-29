@@ -61,7 +61,7 @@ class CalculatorManager
     public function calculateAvailablePoints(int $racesRemaining, int $sprintsRemaining): int
     {
         return ($racesRemaining * (self::POINTS_RACE_P1 + self::POINTS_RACE_FASTEST))
-        + ($sprintsRemaining * self::POINTS_SPRINT_P1);
+            + ($sprintsRemaining * self::POINTS_SPRINT_P1);
     }
 
     /**
@@ -160,6 +160,7 @@ class CalculatorManager
             return $prediction;
         }
 
+        // TODO why racesRemaining - 1 ??
         $pointsGapNeeded = $this->calculateAvailablePoints($racesRemaining - 1, $sprintsRemaining);
         $driversPointsDifference = $leadDriver->seasonPoints - $relevantDrivers[0]->seasonPoints;
 

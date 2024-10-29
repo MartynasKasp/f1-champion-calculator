@@ -24,7 +24,12 @@
             <h5 class="card-title">Prediction for next race</h5>
             {% if prediction is not null %}
                 <p class="card-text">
-                    Prediction for this race has already been run. {% if prediction.comparisons is not empty %}<a href="#">See prediction.{% else %}No predictions calculated.{% endif %}
+                    Prediction for this race has already been run.
+                    {% if prediction.comparisons is not empty %}
+                        <a href="{{ path('admin_predictions_view', { id: prediction.id }) }}">See prediction.
+                    {% else %}
+                        No predictions calculated.
+                    {% endif %}
                 </p>
             {% else %}
                 <a
