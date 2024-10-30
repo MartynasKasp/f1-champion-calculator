@@ -1,5 +1,3 @@
-version: '3.4'
-
 services:
   backend:
     container_name: f1_backend
