@@ -25,11 +25,11 @@ class RaceResult
     protected int $position;
 
     #[ORM\Column(type: "float")]
-    protected float $points;
+    protected float $points = 0;
 
     // Finished, Retired, +1 laps, etc.
     #[ORM\Column(type: "string", nullable: true)]
-    protected ?string $resultStatus = null;
+    protected ?string $resultStatus = 'Finished';
 
     #[ORM\ManyToOne(inversedBy: 'results')]
     #[ORM\JoinColumn(nullable: false)]

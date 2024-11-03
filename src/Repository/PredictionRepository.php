@@ -22,8 +22,14 @@ class PredictionRepository extends ServiceEntityRepository
     }
 
     // TODO filters
+    /**
+     * @return Prediction[]
+     */
     public function getFilteredPredictions(): array
     {
-        return $this->findAll();
+        return $this->createQueryBuilder('p')
+            ->orderBy('p.createdAt', 'DESC')
+            ->getQuery()
+            ->getResult();
     }
 }
