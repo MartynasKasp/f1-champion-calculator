@@ -8,6 +8,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand("app:race-results:check")]
 class CheckRaceResultsCommand extends Command
@@ -30,10 +31,25 @@ class CheckRaceResultsCommand extends Command
         $season = $input->getOption('season');
         $race = $input->getOption('race');
 
+        $io = new SymfonyStyle($input, $output);
+        $io->newLine();
+
         $resultsInfo = $this->ergastApi->checkRaceResultsInfo($season, $race);
-        $output->writeln('Race: ' . $resultsInfo['raceName']);
-        $output->writeln('Date: ' . $resultsInfo['date']);
-        $output->writeln('Round: ' . $resultsInfo['round']);
+        $output->writeln('<info>Race:</info> ' . $resultsInfo['raceName']);
+        $output->writeln('<info>Date:</info> ' . $resultsInfo['date']);
+        $output->writeln('<info>Round:</info> ' . $resultsInfo['round']);
+
+        $tabelRows = [];
+        foreach ($resultsInfo['Results'] as $result) {
+            $tabelRows[] = [
+                $result['position'],
+                ($driver = $result['Driver'])['givenName'] . ' ' . $driver['familyName'],
+                $result['points'],
+                $result['status']
+            ];
+        }
+        $io->newLine();
+        $io->table(['Pos.', 'Driver', 'Points', 'Result'], $tabelRows);
 
         return 0;
     }
