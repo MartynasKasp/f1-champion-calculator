@@ -5,8 +5,7 @@ namespace App\Controller\Admin;
 use App\Annotation\MenuItem;
 use App\Entity\Circuit;
 use App\Form\CircuitActionFormType;
-use App\Service\RaceManager;
-use App\Service\SeasonManager;
+use App\Service\CircuitManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,22 +21,11 @@ class CircuitsController extends AbstractController
     #[Route(path: '/admin/circuits', name: 'admin_circuits_list')]
     #[MenuItem(label: 'Circuits', icon: 'far fa-folder', priority: 40)]
     public function list(
-        Request $request,
-        RaceManager $raceManager,
-        SeasonManager $seasonManager,
+        CircuitManager $circuitManager,
     ) {
-        // $filters = $request->query->all('filters');
-        // if (!isset($filters['year'])) {
-        //     $filters['year'] = (new \DateTimeImmutable())->format('Y');
-        // }
-
-        // TODO pagination
-        return $this->redirectToRoute('admin_dashboard');
-        // return $this->render('admin/races/index.html.twig', [
-        //     'races' => $raceManager->getFilteredRaces($filters),
-        //     'availableYears' => $seasonManager->getAvailableSeasons(),
-        //     'availableTypes' => RaceManager::getAvailableTypes(),
-        // ]);
+        return $this->render('admin/circuits/index.html.twig', [
+            'circuits' => $circuitManager->getAllCircuits(),
+        ]);
     }
 
     #[Route(path: '/admin/circuits/create', name: 'admin_circuits_create')]
@@ -61,32 +49,31 @@ class CircuitsController extends AbstractController
         ]);
     }
 
-    // #[Route(path: '/admin/races/{id}/edit', name: 'admin_races_edit')]
-    // public function edit(
-    //     string $id,
-    //     Request $request,
-    //     RaceManager $raceManager
-    // ) {
-    //     $race = $raceManager->findRaceById($id);
-    //     if (null === $race) {
-    //         // TODO handle alerts
-    //         $this->addFlash('error', 'Race does not exist.');
-    //         return $this->redirectToRoute('admin_races_list');
-    //     }
+    #[Route(path: '/admin/circuits/{id}/edit', name: 'admin_circuits_edit')]
+    public function edit(
+        string $id,
+        Request $request,
+        CircuitManager $circuitManager,
+    ) {
+        $circuit = $circuitManager->findCircuitById($id);
+        if (null === $circuit) {
+            // TODO handle alerts
+            $this->addFlash('error', 'Circuit does not exist.');
+            return $this->redirectToRoute('admin_circuits_list');
+        }
+        $form = $this->createForm(CircuitActionFormType::class, $circuit);
 
-    //     $form = $this->createForm(RaceActionFormType::class, $race);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->entityManager->flush();
 
-    //     $form->handleRequest($request);
-    //     if ($form->isSubmitted() && $form->isValid()) {
-    //         $this->entityManager->flush();
+            $this->addFlash('success', 'Circuit has been edited successfully.');
+            return $this->redirectToRoute('admin_circuits_list');
+        }
 
-    //         $this->addFlash('success', 'Race info has been updated successfully.');
-    //         return $this->redirectToRoute('admin_races_list');
-    //     }
-
-    //     return $this->render('admin/races/action.html.twig', [
-    //         'form' => $form->createView(),
-    //         'objectId' => $id
-    //     ]);
-    // }
+        return $this->render('admin/circuits/action.html.twig', [
+            'form' => $form->createView(),
+            'objectId' => $id,
+        ]);
+    }
 }
