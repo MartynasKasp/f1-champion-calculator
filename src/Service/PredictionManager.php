@@ -76,6 +76,10 @@ class PredictionManager
         $displayItem->driverName = $prediction->getDriver()->getFullName();
         $displayItem->position = NumberFormatterUtil::formatOrdinal($comparison->getLeaderPosition());
 
+        if ($comparison->isLeaderFL()) {
+            $displayItem->position .= ' (with Fastest Lap)';
+        }
+
         return $displayItem;
     }
 
@@ -87,6 +91,10 @@ class PredictionManager
         $displayItem->position = -1 == $comparison->getHighestPosition()
             ? null
             : sprintf("%s or lower", NumberFormatterUtil::formatOrdinal($comparison->getHighestPosition()));
+
+        if (null !== $displayItem->position && ! $comparison->isWithoutFL()) {
+            $displayItem->position .= ' (with Fastest Lap)';
+        }
 
         return $displayItem;
     }

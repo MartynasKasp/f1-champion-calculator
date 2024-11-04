@@ -100,17 +100,25 @@ class RaceResultManager
 
             $raceResults = $this->ergastConnector->getRaceResults($season, $race);
             foreach ($raceResults as $result) {
-                $raceResult = new RaceResult();
-                $raceResult
-                    ->setDriver($this->findOrCreateDriverForResult($result))
-                    ->setPoints($result->points)
-                    ->setPosition($result->position)
-                    ->setRace($raceEntity)
-                    ->setResultStatus($result->status)
-                    ->setSeason($seasonEntity);
+                try {
+                    $raceResult = new RaceResult();
+                    $raceResult
+                        ->setDriver($this->findOrCreateDriverForResult($result))
+                        ->setPoints($result->points)
+                        ->setPosition($result->position)
+                        ->setRace($raceEntity)
+                        ->setResultStatus($result->status)
+                        ->setSeason($seasonEntity);
 
-                $this->entityManager->persist($raceResult);
-                $raceEntity->addResult($raceResult);
+                    $this->entityManager->persist($raceResult);
+                    $raceEntity->addResult($raceResult);
+                } catch (\Exception $exception) {
+                    $this->logger->error(
+                        'Race result import failed. Skipping. Error: ' . $exception->getMessage(),
+                        ['result' => json_encode($result), 'season' => $season, 'race' => $race]
+                    );
+                    continue;
+                }
             }
 
             $raceEntity->setCompleted(true);

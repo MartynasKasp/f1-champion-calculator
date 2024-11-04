@@ -22,7 +22,7 @@
                                             {% for items in predictionDisplay.items %}
                                                 <tr>
                                                     {% for item in items %}
-                                                        <td>{{ item.position }}</td>
+                                                        <td>{% if item.position is not null %} {{ item.position }} {% else %} - {% endif %}</td>
                                                     {% endfor %}
                                                 <tr>
                                             {% endfor %}

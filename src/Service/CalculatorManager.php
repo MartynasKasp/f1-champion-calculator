@@ -69,7 +69,6 @@ class CalculatorManager
      */
     public function calculate(): void
     {
-        // TODO TODO what?
         /** @var \App\Repository\SeasonRepository $seasonRepository */
         $seasonRepository = $this->entityManager->getRepository(Season::class);
         $currentSeason = $seasonRepository->getCurrentSeason();
@@ -160,7 +159,6 @@ class CalculatorManager
             return $prediction;
         }
 
-        // TODO why racesRemaining - 1 ??
         $pointsGapNeeded = $this->calculateAvailablePoints($racesRemaining - 1, $sprintsRemaining);
         $driversPointsDifference = $leadDriver->seasonPoints - $relevantDrivers[0]->seasonPoints;
 
@@ -171,7 +169,7 @@ class CalculatorManager
 
         // Check if the standings leader can possibly get a win during the current weekend
         if ($driversPointsDifference + $maximumPoints < $pointsGapNeeded) {
-            // Lead driver cannot achieve a win yet even with P1 + Fastest Lap
+            // Lead driver cannot achieve a win yet even with Maximum Points
             $this->logger->info('Lead driver cannot achieve a win yet. Returning empty prediction.');
 
             $this->entityManager->flush();
@@ -212,7 +210,7 @@ class CalculatorManager
     ): Prediction {
         $isSprint = $prediction->getRace()->isSprintRace();
 
-        if (false === $isSprint && $position > count(self::getRacePointsForFinish())) {
+        if (! $isSprint && $position > count(self::getRacePointsForFinish())) {
             return $prediction;
         } elseif ($isSprint && $position > count(self::getSprintPointsForFinish())) {
             return $prediction;
@@ -238,7 +236,8 @@ class CalculatorManager
                     ->setLeaderPosition($position)
                     ->setLeaderFL(true)
                     ->setContender($contender->driver)
-                    ->setHighestPosition($dropOutPosition);
+                    ->setHighestPosition($dropOutPosition)
+                    ->setWithoutFL(true);
 
                 $this->entityManager->persist($comparison);
                 $prediction->addComparison($comparison);
