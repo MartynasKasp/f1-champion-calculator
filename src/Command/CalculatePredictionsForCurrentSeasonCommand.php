@@ -14,7 +14,7 @@ class CalculatePredictionsForCurrentSeasonCommand extends Command
     public function __construct(
         private CalculatorManager $calculatorManager,
     ) {
-        parent::__construct();  
+        parent::__construct();
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
