@@ -33,6 +33,9 @@ class Season
     #[ORM\ManyToOne]
     protected ?Driver $champion = null;
 
+    #[ORM\Column(type: "boolean", nullable: true)]
+    protected bool $flExtraPoint = false;
+
     public function getId(): ?string
     {
         return $this->id;
@@ -124,6 +127,17 @@ class Season
     public function setChampion(?Driver $champion): static
     {
         $this->champion = $champion;
+        return $this;
+    }
+
+    public function isFlExtraPoint(): bool
+    {
+        return $this->flExtraPoint;
+    }
+
+    public function setFlExtraPoint(bool $flExtraPoint): static
+    {
+        $this->flExtraPoint = $flExtraPoint;
         return $this;
     }
 }

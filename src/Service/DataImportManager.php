@@ -99,6 +99,12 @@ class DataImportManager
                 ->setCircuit($circuit);
             $this->entityManager->persist($race);
 
+            if ((bool) $line['is_sprint']) {
+                $sprints++;
+            } else {
+                $races++;
+            }
+
             $this->entityManager->flush();
         }
 

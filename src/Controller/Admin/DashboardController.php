@@ -38,7 +38,8 @@ class DashboardController extends AbstractController
         $nextRace = $raceManager->getNextRaceForSeason($season);
         $maxPointsAvailable = $calculatorManager->calculateAvailablePoints(
             $season->getRaces() - $season->getCompletedRaces(),
-            $season->getSprints() - $season->getCompletedSprints()
+            $season->getSprints() - $season->getCompletedSprints(),
+            $season->isFlExtraPoint()
         );
 
         return $this->render('admin/dashboard/index.html.twig', [

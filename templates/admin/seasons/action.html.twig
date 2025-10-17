@@ -45,6 +45,11 @@
                                     {{ form_label(form.completedSprints, null, { 'label_attr': { 'class': 'form-label' }}) }}
                                 </div>
 
+                                <div class="form-check mb-4" data-mdb-input-init>
+                                    {{ form_widget(form.flExtraPoint, { 'attr': { 'class': 'form-check-input' }}) }}
+                                    {{ form_label(form.flExtraPoint, null, { 'label_attr': { 'class': 'form-check-label' }}) }}
+                                </div>
+
                                 {{ form_widget(form.submit, { 'attr': { 'class': 'btn btn-primary'}}) }}
                             {{ form_end(form) }}
                         </div>

@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Season;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -25,6 +26,10 @@ class SeasonActionFormType extends AbstractType
             ->add('sprints', NumberType::class, [])
             ->add('completedRaces', NumberType::class, [])
             ->add('completedSprints', NumberType::class, [])
+            ->add('flExtraPoint', CheckboxType::class, [
+                'label' => 'Extra point for Fastest Lap',
+                'required' => false,
+            ])
             ->add('submit', SubmitType::class, [
                 'label' => 'Save'
             ])

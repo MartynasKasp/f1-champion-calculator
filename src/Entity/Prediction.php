@@ -83,34 +83,4 @@ class Prediction
     {
         return $this->createdAt;
     }
-
-    // /**
-    //  * @return Collection<int, PredictionComparison>
-    //  */
-    // public function getStuff(): Collection
-    // {
-    //     return $this->stuff;
-    // }
-
-    // public function addStuff(PredictionComparison $stuff): static
-    // {
-    //     if (!$this->stuff->contains($stuff)) {
-    //         $this->stuff->add($stuff);
-    //         $stuff->setPrediction($this);
-    //     }
-
-    //     return $this;
-    // }
-
-    // public function removeStuff(PredictionComparison $stuff): static
-    // {
-    //     if ($this->stuff->removeElement($stuff)) {
-    //         // set the owning side to null (unless already changed)
-    //         if ($stuff->getPrediction() === $this) {
-    //             $stuff->setPrediction(null);
-    //         }
-    //     }
-
-    //     return $this;
-    // }
 }
