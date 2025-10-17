@@ -13,7 +13,7 @@ class MenuItemsExtension extends AbstractExtension
     ) {
     }
 
-    public function getFunctions()
+    public function getFunctions(): array
     {
         return [
             new TwigFunction('getMenuItems', [$this, 'getAdminMenu']),

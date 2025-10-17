@@ -45,7 +45,7 @@ class MenuBuilder
     /**
      * @return null|object
      */
-    private function getReflectionAttributeInstance(\ReflectionMethod $reflection, string $class)
+    private function getReflectionAttributeInstance(\ReflectionMethod $reflection, string $class): ?object
     {
         $attributes = $reflection->getAttributes($class);
         if (count($attributes)) {

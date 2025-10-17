@@ -18,7 +18,7 @@ class CheckRaceResultsCommand extends Command
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->addOption('season', 's', InputOption::VALUE_REQUIRED, 'Season', 'current')
