@@ -1,0 +1,20 @@
+<!-- Modal -->
+<div class="modal fade" id="season-data-import-modal" tabindex="-1" aria-labelledby="season-data-import-modal-label" aria-hidden="true">
+    <div class="modal-dialog">
+        <form method="POST" action="{{ path('admin_data_import_season') }}" enctype="multipart/form-data">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="season-data-import-modal-label">Import Season data</h5>
+                    <button type="button" class="btn-close" data-mdb-ripple-init data-mdb-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="file" class="form-control" id="file" name="file" accept=".csv"/>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-mdb-ripple-init data-mdb-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" data-mdb-ripple-init>Import</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

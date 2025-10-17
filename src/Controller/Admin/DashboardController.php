@@ -45,7 +45,7 @@ class DashboardController extends AbstractController
             'nextRace' => $nextRace,
             'standings' => $raceResultManager->getDriversByStandingsForSeason($season),
             'season' => $season,
-            'prediction' => $predictionRepository->findPredictionForRace($nextRace->getId()),
+            'prediction' => $predictionRepository->findPredictionForRace($nextRace?->getId()),
             'maxPointsAvailable' => $maxPointsAvailable,
         ]);
     }

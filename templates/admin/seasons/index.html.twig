@@ -1,12 +1,19 @@
 {% extends 'admin/base.html.twig' %}
 
 {% block body %}
+    {% include 'admin/seasons/data-import-modal.html.twig' %}
+
     <div class="container pt-4">
         <div class="row mb-4">
             <div class="col">
                 <a href="{{ path('admin_seasons_create') }}" class="btn btn-primary" data-mdb-ripple-init>
                     <i class="fas fa-plus me-3"></i>
-                    Create Season
+                    Add Season
+                </a>
+
+                <a href="#" style="float: right;" class="btn btn-primary" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#season-data-import-modal">
+                    <i class="fas fa-file-arrow-up me-3"></i>
+                    Import data
                 </a>
             </div>
         </div>

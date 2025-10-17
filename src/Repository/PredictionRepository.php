@@ -12,7 +12,7 @@ class PredictionRepository extends ServiceEntityRepository
         parent::__construct($registry, Prediction::class);
     }
 
-    public function findPredictionForRace(string $raceId): ?Prediction
+    public function findPredictionForRace(?string $raceId): ?Prediction
     {
         return $this->createQueryBuilder('p')
             ->where('p.race = :RACE')

@@ -26,4 +26,10 @@ class CircuitManager
         return $this->entityManager->getRepository(Circuit::class)
             ->find($id);
     }
+
+    public function findCircuit(string $circuit): ?Circuit
+    {
+        return $this->entityManager->getRepository(Circuit::class)
+            ->findOneBy(['circuit' => $circuit]);
+    }
 }
