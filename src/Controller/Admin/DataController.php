@@ -6,6 +6,7 @@ use App\Service\DataImportManager;
 use App\Trait\LoggerInjector;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 class DataController extends AbstractController
@@ -13,7 +14,7 @@ class DataController extends AbstractController
     use LoggerInjector;
 
     #[Route(path: '/admin/data/import-season', name: 'admin_data_import_season')]
-    public function importData(Request $request, DataImportManager $dataImportManager)
+    public function importData(Request $request, DataImportManager $dataImportManager): Response
     {
         try {
             /** @var \Symfony\Component\HttpFoundation\File\UploadedFile $file */

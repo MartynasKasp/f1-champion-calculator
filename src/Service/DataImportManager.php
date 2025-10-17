@@ -16,11 +16,13 @@ class DataImportManager
     public function __construct(
         private EntityManagerInterface $entityManager,
         private SeasonManager $seasonManager,
-        private RaceManager $raceManager,
         private CircuitManager $circuitManager,
     ) {
     }
 
+    /**
+     * @return array<string>
+     */
     public static function seasonDataFileHeaders(): array
     {
         return ['race_date', 'grand_prix', 'is_sprint', 'circuit', 'country'];
@@ -29,7 +31,7 @@ class DataImportManager
     /**
      * @throws \Exception
      */
-    public function importSeasonData(UploadedFile $uploadedFile)
+    public function importSeasonData(UploadedFile $uploadedFile): void
     {
         $splFile = $uploadedFile->openFile('r');
         $splFile->setFlags(\SplFileObject::READ_CSV);
@@ -55,6 +57,7 @@ class DataImportManager
                 $this->logger->error('Season data import: invalid date', [
                     'line' => $i, 'error' => $error->getMessage()
                 ]);
+                continue;
             }
 
             if (null === $firstRaceDate) {
@@ -117,6 +120,9 @@ class DataImportManager
         $this->entityManager->flush();
     }
 
+    /**
+     * @param array<string> $expectedHeaders
+     */
     private function validateFileHeaders(\SplFileObject $splFile, array $expectedHeaders): void
     {
         $fileHeaders = $splFile->fgetcsv();

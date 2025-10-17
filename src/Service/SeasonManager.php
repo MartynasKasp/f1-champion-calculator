@@ -37,6 +37,9 @@ class SeasonManager
         return $this->seasonRepository->find($id);
     }
 
+    /**
+     * @return array<string>
+     */
     public function getAvailableSeasons(): array
     {
         $startDate = new \DateTimeImmutable($this->firstSeason . '-01-01');

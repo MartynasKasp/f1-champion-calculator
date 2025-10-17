@@ -49,7 +49,7 @@ class Prediction
         return $this->driver;
     }
 
-    public function getComparisons()
+    public function getComparisons(): Collection
     {
         return $this->comparisons;
     }
@@ -62,7 +62,7 @@ class Prediction
         return $this;
     }
 
-    public function setComparisons($comparisons): static
+    public function setComparisons(Collection $comparisons): static
     {
         $this->comparisons = $comparisons;
         return $this;

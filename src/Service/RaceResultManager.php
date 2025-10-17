@@ -39,10 +39,10 @@ class RaceResultManager
 
         $standings = [];
         foreach ($results as $result) {
-            $diff = $results[0]['seasonPoints'] - $result['seasonPoints'];
+            $diff = ((int)$results[0]['seasonPoints']) - ((int)$result['seasonPoints']);
             $standings[] = new RaceResultDTO(
                 driver: $driverRepo->find($result['driverId']),
-                seasonPoints: $result['seasonPoints'],
+                seasonPoints: (float) $result['seasonPoints'],
                 diffToLeader: $diff > 0 ? $diff : null
             );
         }
@@ -73,13 +73,13 @@ class RaceResultManager
 
                 $raceEntity = $raceRepo->getLastRaceByDate(
                     (new \DateTimeImmutable())->setDate(
-                        $season,
-                        $currentDate->format('n'),
-                        $currentDate->format('j')
+                        (int) $season,
+                        (int) $currentDate->format('n'),
+                        (int) $currentDate->format('j')
                     )
                 );
             } else {
-                $raceEntity = $raceRepo->getRaceForSeasonByStage($seasonEntity->getId(), $race);
+                $raceEntity = $raceRepo->getRaceForSeasonByStage($seasonEntity->getId(), (int) $race);
             }
 
             if (null === $raceEntity) {
@@ -104,8 +104,8 @@ class RaceResultManager
                     $raceResult = new RaceResult();
                     $raceResult
                         ->setDriver($this->findOrCreateDriverForResult($result))
-                        ->setPoints($result->points)
-                        ->setPosition($result->position)
+                        ->setPoints((float) $result->points)
+                        ->setPosition((int) $result->position)
                         ->setRace($raceEntity)
                         ->setResultStatus($result->status)
                         ->setSeason($seasonEntity);
@@ -151,13 +151,13 @@ class RaceResultManager
 
                 $raceEntity = $raceRepo->getLastRaceByDate(
                     (new \DateTimeImmutable())->setDate(
-                        $season,
-                        $currentDate->format('n'),
-                        $currentDate->format('j')
+                        (int) $season,
+                        (int) $currentDate->format('n'),
+                        (int) $currentDate->format('j')
                     )
                 );
             } else {
-                $raceEntity = $raceRepo->getRaceForSeasonByStage($seasonEntity->getId(), $sprint, true);
+                $raceEntity = $raceRepo->getRaceForSeasonByStage($seasonEntity->getId(), (int) $sprint, true);
             }
 
             if (null === $raceEntity) {
@@ -182,8 +182,8 @@ class RaceResultManager
                     $raceResult = new RaceResult();
                     $raceResult
                         ->setDriver($this->findOrCreateDriverForResult($result))
-                        ->setPoints($result->points)
-                        ->setPosition($result->position)
+                        ->setPoints((float) $result->points)
+                        ->setPosition((int) $result->position)
                         ->setRace($raceEntity)
                         ->setResultStatus($result->status)
                         ->setSeason($seasonEntity);

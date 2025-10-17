@@ -33,6 +33,8 @@ class RaceRepository extends ServiceEntityRepository
     }
 
     /**
+     * @param array<string> $filters
+     *
      * @return Race[]
      */
     public function getFilteredRaces(

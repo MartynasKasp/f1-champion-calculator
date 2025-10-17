@@ -14,6 +14,9 @@ class RaceResultRepository extends ServiceEntityRepository
         parent::__construct($registry, RaceResult::class);
     }
 
+    /**
+     * @return array<array{seasonPoints:string,driverId:string}>
+     */
     public function getStandingsForSeason(Season $season): array
     {
         return $this->createQueryBuilder('rr')

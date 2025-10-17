@@ -9,6 +9,7 @@ use App\Service\SeasonManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 class SeasonController extends AbstractController
@@ -22,7 +23,7 @@ class SeasonController extends AbstractController
     #[MenuItem(label: 'Seasons', icon: 'fas fa-globe', priority: 20)]
     public function list(
         SeasonManager $seasonManager,
-    ) {
+    ): Response {
         // TODO pagination
         return $this->render('admin/seasons/index.html.twig', [
             'seasons' => $seasonManager->getAllSeasonsSorted(),
@@ -32,7 +33,7 @@ class SeasonController extends AbstractController
     #[Route(path: '/admin/seasons/create', name: 'admin_seasons_create')]
     public function create(
         Request $request,
-    ) {
+    ): Response {
         $season = new Season();
         $form = $this->createForm(SeasonActionFormType::class, $season);
 
@@ -57,7 +58,7 @@ class SeasonController extends AbstractController
         string $id,
         Request $request,
         SeasonManager $seasonManager
-    ) {
+    ): Response {
         $season = $seasonManager->findSeasonById($id);
         if (null === $season) {
             // TODO handle alerts

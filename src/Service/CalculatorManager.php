@@ -27,6 +27,9 @@ class CalculatorManager
     ) {
     }
 
+    /**
+     * @return array<string|int,int>
+     */
     public static function getRacePointsForFinish(): array
     {
         return [
@@ -43,6 +46,9 @@ class CalculatorManager
         ];
     }
 
+    /**
+     * @return array<string|int,int>
+     */
     public static function getSprintPointsForFinish(): array
     {
         return [

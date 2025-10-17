@@ -9,6 +9,7 @@ use App\Service\CircuitManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 class CircuitsController extends AbstractController
@@ -22,7 +23,7 @@ class CircuitsController extends AbstractController
     #[MenuItem(label: 'Circuits', icon: 'far fa-folder', priority: 40)]
     public function list(
         CircuitManager $circuitManager,
-    ) {
+    ): Response {
         return $this->render('admin/circuits/index.html.twig', [
             'circuits' => $circuitManager->getAllCircuits(),
         ]);
@@ -31,7 +32,7 @@ class CircuitsController extends AbstractController
     #[Route(path: '/admin/circuits/create', name: 'admin_circuits_create')]
     public function create(
         Request $request,
-    ) {
+    ): Response {
         $circuit = new Circuit();
         $form = $this->createForm(CircuitActionFormType::class, $circuit);
 
@@ -54,7 +55,7 @@ class CircuitsController extends AbstractController
         string $id,
         Request $request,
         CircuitManager $circuitManager,
-    ) {
+    ): Response {
         $circuit = $circuitManager->findCircuitById($id);
         if (null === $circuit) {
             // TODO handle alerts
