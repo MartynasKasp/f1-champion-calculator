@@ -25,9 +25,11 @@
 
                             <tr class="{% if showEliminationBorder %}StandingsTable__EliminationBorder{% endif %}">
                                 <td>{{ position }}</td>
-                                <td>{{ standing.driver.fullName }}</td>
+                                <td>
+                                    <span class="text-muted">#{{ standing.driver.number }}</span> &nbsp; {{ standing.driver.fullName }}
+                                </td>
                                 <td>{{ standing.seasonPoints }}</td>
-                                <td>-{{ standing.diffToLeader }}</td>
+                                <td>&ndash;{{ standing.diffToLeader }}</td>
                             </tr>
                             {% set position = position + 1 %}
                         {% endfor %}

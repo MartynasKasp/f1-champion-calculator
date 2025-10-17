@@ -110,6 +110,12 @@ class Season
         return $this;
     }
 
+    public function increaseCompletedSprints(): static
+    {
+        $this->completedSprints += 1;
+        return $this;
+    }
+
     public function getChampion(): ?Driver
     {
         return $this->champion;

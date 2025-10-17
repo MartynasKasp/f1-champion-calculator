@@ -133,6 +133,84 @@ class RaceResultManager
         }
     }
 
+    public function importSprintResults(string $season, string $race, string $sprint): void
+    {
+        try {
+            if ('current' === $season) {
+                $season = (new \DateTimeImmutable())->format('Y');
+            }
+
+            /** @var \App\Repository\SeasonRepository $seasonRepo */
+            $seasonRepo = $this->entityManager->getRepository(Season::class);
+            /** @var \App\Repository\RaceRepository $raceRepo */
+            $raceRepo = $this->entityManager->getRepository(Race::class);
+
+            $seasonEntity = $seasonRepo->findSeasonById($season);
+            if ('last' === $race) {
+                $currentDate = new \DateTimeImmutable();
+
+                $raceEntity = $raceRepo->getLastRaceByDate(
+                    (new \DateTimeImmutable())->setDate(
+                        $season,
+                        $currentDate->format('n'),
+                        $currentDate->format('j')
+                    )
+                );
+            } else {
+                $raceEntity = $raceRepo->getRaceForSeasonByStage($seasonEntity->getId(), $sprint, true);
+            }
+
+            if (null === $raceEntity) {
+                $this->logger->error(
+                    'Sprint results import: race does not exist. Skipping import.',
+                    ['season' => $season, 'race_stage' => $race]
+                );
+                return;
+            }
+
+            if ($raceEntity->isCompleted()) {
+                $this->logger->info(
+                    'Sprint results import: race ' . $raceEntity->getId() . ' is already completed. Skipping import.',
+                    ['race_date' => $raceEntity->getDate()->format('Y-m-d')]
+                );
+                return;
+            }
+
+            $raceResults = $this->ergastConnector->getSprintResults($season, $race);
+            foreach ($raceResults as $result) {
+                try {
+                    $raceResult = new RaceResult();
+                    $raceResult
+                        ->setDriver($this->findOrCreateDriverForResult($result))
+                        ->setPoints($result->points)
+                        ->setPosition($result->position)
+                        ->setRace($raceEntity)
+                        ->setResultStatus($result->status)
+                        ->setSeason($seasonEntity);
+
+                    $this->entityManager->persist($raceResult);
+                    $raceEntity->addResult($raceResult);
+                } catch (\Exception $exception) {
+                    $this->logger->error(
+                        'Sprint result import failed. Skipping. Error: ' . $exception->getMessage(),
+                        ['result' => json_encode($result), 'season' => $season, 'race' => $race]
+                    );
+                    continue;
+                }
+            }
+
+            $raceEntity->setCompleted(true);
+            $seasonEntity->increaseCompletedSprints();
+
+            $this->entityManager->flush();
+        } catch (\Exception $exception) {
+            $this->logger->error(
+                'Sprint results import failed. Error: ' . $exception->getMessage(),
+                ['season' => $season, 'race' => $race]
+            );
+        }
+    }
+
     // public function importLastRaceResults(): void
     // {
     //     $this->importRaceResults('current', 'last');

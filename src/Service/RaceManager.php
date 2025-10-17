@@ -27,7 +27,7 @@ class RaceManager
         return [self::TYPE_RACE, self::TYPE_SPRINT];
     }
 
-    public function getNextRaceForSeason(?Season $season = null, bool $sprintOnly = false): null
+    public function getNextRaceForSeason(?Season $season = null, bool $sprintOnly = false): ?Race
     {
         /** @var \App\Repository\SeasonRepository $seasonRepository */
         $seasonRepository = $this->entityManager->getRepository(Season::class);

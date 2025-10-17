@@ -64,12 +64,13 @@ class RaceRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function getRaceForSeasonByStage(string $season, int $stage): ?Race
+    public function getRaceForSeasonByStage(string $season, int $stage, bool $sprint = false): ?Race
     {
         $qb = $this->createQueryBuilder('r')
             ->where('r.season = :season')
             ->setParameter('season', $season)
-            ->andWhere('r.sprintRace = FALSE');
+            ->andWhere('r.sprintRace = :sprint')
+            ->setParameter('sprint', $sprint);
 
         return $qb->orderBy('r.date', 'ASC')
             ->setMaxResults(1)

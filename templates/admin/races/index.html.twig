@@ -78,21 +78,23 @@
                                         <tbody>
                                             {% for race in races %}
                                                 <tr>
-                                                    <td>{{ race.season.id }}</td>
+                                                    <td>
+                                                        {{ race.season.id }}
+                                                    </td>
                                                     <td>{{ race.date|date('Y-m-d') }}</td>
                                                     <td>{{ race.grandPrix }}</td>
                                                     <td>
                                                         {% if race.sprintRace == true %}
-                                                            Sprint
+                                                            <span class="text-info">Sprint</span>
                                                         {% else %}
                                                             Race
                                                         {% endif %}
                                                     </td>
                                                     <td>
                                                         {% if race.canceled == true %}
-                                                            Canceled
+                                                            <span class="text-danger">Canceled</span>
                                                         {% elseif race.completed == true %}
-                                                            Completed
+                                                            <span class="text-success">Completed</span>
                                                         {% else %}
                                                             Scheduled
                                                         {% endif %}
