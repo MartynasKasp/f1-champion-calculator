@@ -1,4 +1,4 @@
-FROM php:8.3-apache
+FROM php:8.4.13-apache
 RUN apt-get update && apt-get install -y \
         libfreetype6-dev \
         libjpeg62-turbo-dev \
@@ -45,7 +45,7 @@ RUN set -eux; \
     composer clear-cache
 ENV PATH="${PATH}:/root/.composer/vendor/bin"
 
-RUN yes | pecl install xdebug-3.3.1 \
+RUN yes | pecl install xdebug-3.4.6 \
     && echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)" > /usr/local/etc/php/conf.d/xdebug.ini \
     && echo "xdebug.client_port=9003" >> /usr/local/etc/php/conf.d/xdebug.ini \
     && echo "xdebug.mode=debug" >> /usr/local/etc/php/conf.d/xdebug.ini \
