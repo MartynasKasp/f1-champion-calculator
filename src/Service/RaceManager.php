@@ -22,6 +22,9 @@ class RaceManager
         $this->raceRepository = $repo;
     }
 
+    /**
+     * @return array<string>
+     */
     public static function getAvailableTypes(): array
     {
         return [self::TYPE_RACE, self::TYPE_SPRINT];
@@ -40,6 +43,8 @@ class RaceManager
     }
 
     /**
+     * @param array<string> $filters
+     *
      * @return Race[]
      */
     public function getFilteredRaces(

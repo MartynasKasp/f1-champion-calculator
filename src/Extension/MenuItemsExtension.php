@@ -20,6 +20,9 @@ class MenuItemsExtension extends AbstractExtension
         ];
     }
 
+    /**
+     * @return \App\Annotation\MenuItem[]
+     */
     public function getAdminMenu(): array
     {
         return $this->menuBuilder->buildMenuItems();

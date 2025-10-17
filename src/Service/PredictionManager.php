@@ -25,6 +25,9 @@ class PredictionManager
     }
 
     // TODO filters
+    /**
+     * @return Prediction[]
+     */
     public function getFilteredPredictions(): array
     {
         return $this->repository->getFilteredPredictions();

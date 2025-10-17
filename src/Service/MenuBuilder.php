@@ -12,6 +12,9 @@ class MenuBuilder
     ) {
     }
 
+    /**
+     * @return MenuItem[]
+     */
     public function buildMenuItems(): array
     {
         $menuItems = [];
@@ -35,7 +38,7 @@ class MenuBuilder
             }
         }
 
-        usort($menuItems, fn (MenuItem $left, MenuItem $right) => $left->priority > $right->priority);
+        usort($menuItems, fn (MenuItem $left, MenuItem $right) => $left->priority > $right->priority ? 1 : -1);
         return $menuItems;
     }
 

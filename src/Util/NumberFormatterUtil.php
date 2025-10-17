@@ -13,7 +13,7 @@ class NumberFormatterUtil
         return new NumberFormatter(self::LOCALE, NumberFormatter::ORDINAL);
     }
 
-    public static function formatOrdinal($value): string
+    public static function formatOrdinal(int|float $value): string
     {
         return self::getOrdinalNumberFormatter()->format($value);
     }

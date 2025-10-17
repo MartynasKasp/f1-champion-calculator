@@ -13,6 +13,7 @@ use App\Service\SeasonManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 class RaceController extends AbstractController
@@ -28,7 +29,7 @@ class RaceController extends AbstractController
         Request $request,
         RaceManager $raceManager,
         SeasonManager $seasonManager,
-    ) {
+    ): Response {
         $filters = $request->query->all('filters');
         if (!isset($filters['year'])) {
             $filters['year'] = (new \DateTimeImmutable())->format('Y');
@@ -45,7 +46,7 @@ class RaceController extends AbstractController
     #[Route(path: '/admin/races/create', name: 'admin_races_create')]
     public function create(
         Request $request,
-    ) {
+    ): Response {
         $race = new Race();
         $form = $this->createForm(RaceActionFormType::class, $race);
 
@@ -77,7 +78,7 @@ class RaceController extends AbstractController
         string $id,
         Request $request,
         RaceManager $raceManager,
-    ) {
+    ): Response {
         $race = $raceManager->findRaceById($id);
         if (null === $race) {
             // TODO handle alerts
@@ -113,7 +114,7 @@ class RaceController extends AbstractController
         string $raceId,
         Request $request,
         RaceManager $raceManager,
-    ) {
+    ): Response {
         $race = $raceManager->findRaceById($raceId);
         if (null === $race) {
             // TODO handle alerts
@@ -149,7 +150,7 @@ class RaceController extends AbstractController
         string $resultId,
         Request $request,
         RaceResultManager $raceResultManager,
-    ) {
+    ): Response {
         $raceResult = $raceResultManager->findById($resultId);
         if (null === $raceResult) {
             // TODO handle alerts

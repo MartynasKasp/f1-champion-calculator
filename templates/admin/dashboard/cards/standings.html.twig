@@ -29,7 +29,11 @@
                                     <span class="text-muted">#{{ standing.driver.number }}</span> &nbsp; {{ standing.driver.fullName }}
                                 </td>
                                 <td>{{ standing.seasonPoints }}</td>
-                                <td>&ndash;{{ standing.diffToLeader }}</td>
+                                <td>
+                                    <span class="{% if standing.diffToLeader > maxPointsAvailable %}text-white-50{% endif %}">
+                                        &ndash;{{ standing.diffToLeader }}
+                                    </span>
+                                </td>
                             </tr>
                             {% set position = position + 1 %}
                         {% endfor %}

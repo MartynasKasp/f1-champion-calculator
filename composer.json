@@ -109,6 +109,14 @@
         "clear-db": [
             "php bin/console doctrine:database:drop --force || echo 'db does not exist'",
             "php bin/console doctrine:database:create || echo 'db exists'"
+        ],
+        "reset-db": [
+            "php bin/console doctrine:database:drop --force || echo 'db does not exist'",
+            "php bin/console doctrine:database:create || echo 'db exists'",
+            "php bin/console doctrine:migrations:migrate --no-interaction"
+        ],
+        "update-db": [
+            "php bin/console doctrine:migrations:migrate --no-interaction"
         ]
     },
     "conflict": {

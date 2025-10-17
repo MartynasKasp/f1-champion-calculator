@@ -11,6 +11,7 @@ use App\Entity\Season;
 use App\Service\CalculatorManager;
 use App\Service\RaceResultManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Response;
 
 class DashboardController extends AbstractController
 {
@@ -28,7 +29,7 @@ class DashboardController extends AbstractController
         RaceManager $raceManager,
         RaceResultManager $raceResultManager,
         CalculatorManager $calculatorManager,
-    ) {
+    ): Response {
         /** @var \App\Repository\SeasonRepository $seasonRepository */
         $seasonRepository = $this->entityManager->getRepository(Season::class);
         /** @var \App\Repository\PredictionRepository $predictionRepository */
@@ -38,7 +39,8 @@ class DashboardController extends AbstractController
         $nextRace = $raceManager->getNextRaceForSeason($season);
         $maxPointsAvailable = $calculatorManager->calculateAvailablePoints(
             $season->getRaces() - $season->getCompletedRaces(),
-            $season->getSprints() - $season->getCompletedSprints()
+            $season->getSprints() - $season->getCompletedSprints(),
+            $season->isFlExtraPoint()
         );
 
         return $this->render('admin/dashboard/index.html.twig', [

@@ -18,7 +18,6 @@ class CalculatorManager
     const POINTS_RACE_P1 = 25;
     const POINTS_RACE_P10 = 1;
     const POINTS_RACE_FASTEST = 1;
-    const POINTS_RACE_MAX = self::POINTS_RACE_P1 + self::POINTS_RACE_FASTEST;
 
     const POINTS_SPRINT_P1 = 8;
 
@@ -28,6 +27,9 @@ class CalculatorManager
     ) {
     }
 
+    /**
+     * @return array<string|int,int>
+     */
     public static function getRacePointsForFinish(): array
     {
         return [
@@ -44,6 +46,9 @@ class CalculatorManager
         ];
     }
 
+    /**
+     * @return array<string|int,int>
+     */
     public static function getSprintPointsForFinish(): array
     {
         return [
@@ -58,9 +63,17 @@ class CalculatorManager
         ];
     }
 
-    public function calculateAvailablePoints(int $racesRemaining, int $sprintsRemaining): int
+    public static function getRaceMaxPoints(bool $flExtra): int
     {
-        return ($racesRemaining * (self::POINTS_RACE_P1 + self::POINTS_RACE_FASTEST))
+        $fastestPoints = (!$flExtra ? 0 : self::POINTS_RACE_FASTEST);
+        return self::POINTS_RACE_P1 + $fastestPoints;
+    }
+
+    public function calculateAvailablePoints(int $racesRemaining, int $sprintsRemaining, bool $flExtra): int
+    {
+        $fastestPoints = (!$flExtra ? 0 : self::POINTS_RACE_FASTEST);
+
+        return ($racesRemaining * (self::POINTS_RACE_P1 + $fastestPoints))
             + ($sprintsRemaining * self::POINTS_SPRINT_P1);
     }
 
@@ -101,7 +114,8 @@ class CalculatorManager
 
         $drivers = $this->raceResultManager->getDriversByStandingsForSeason($season);
         $seasonSprintsLeft = $season->getSprints() - $season->getCompletedSprints();
-        $maxPointsLeftForGrab = $this->calculateAvailablePoints($seasonRacesLeft, $seasonSprintsLeft);
+        $maxPointsLeftForGrab = $this
+            ->calculateAvailablePoints($seasonRacesLeft, $seasonSprintsLeft, $season->isFlExtraPoint());
 
         $leadDriver = array_shift($drivers);
         $relevantDrivers = array_filter(
@@ -159,10 +173,11 @@ class CalculatorManager
             return $prediction;
         }
 
-        $pointsGapNeeded = $this->calculateAvailablePoints($racesRemaining - 1, $sprintsRemaining);
+        $pointsGapNeeded = $this
+            ->calculateAvailablePoints($racesRemaining - 1, $sprintsRemaining, $season->isFlExtraPoint());
         $driversPointsDifference = $leadDriver->seasonPoints - $relevantDrivers[0]->seasonPoints;
 
-        $maximumPoints = self::POINTS_RACE_MAX;
+        $maximumPoints = self::getRaceMaxPoints($season->isFlExtraPoint());
         if ($nextRace->isSprintRace()) {
             $maximumPoints = self::POINTS_SPRINT_P1;
         }
@@ -220,27 +235,30 @@ class CalculatorManager
             ? self::getRacePointsForFinish()[$position]
             : self::getSprintPointsForFinish()[$position];
 
+        $checkWithFastestLap = $prediction->getRace()->getSeason()?->isFlExtraPoint() ?? true;
         foreach ($contenders as $contender) {
             // Checking for normal race
             if (false === $isSprint) {
-                // Checking finishing position WITH fastest lap
-                [$dropOutPosition, $_] = $this->checkHighestPositionToDropOut(
-                    $leader->seasonPoints + $predictedLeaderPoints,
-                    $position,
-                    $contender,
-                    $pointsGapNeeded,
-                    true
-                );
-                $comparison = new PredictionComparison();
-                $comparison
-                    ->setLeaderPosition($position)
-                    ->setLeaderFL(true)
-                    ->setContender($contender->driver)
-                    ->setHighestPosition($dropOutPosition)
-                    ->setWithoutFL(true);
+                if ($checkWithFastestLap) {
+                    // Checking finishing position WITH fastest lap
+                    [$dropOutPosition, $_] = $this->checkHighestPositionToDropOut(
+                        $leader->seasonPoints + $predictedLeaderPoints,
+                        $position,
+                        $contender,
+                        $pointsGapNeeded,
+                        true
+                    );
+                    $comparison = new PredictionComparison();
+                    $comparison
+                        ->setLeaderPosition($position)
+                        ->setLeaderFL(true)
+                        ->setContender($contender->driver)
+                        ->setHighestPosition($dropOutPosition)
+                        ->setWithoutFL(true);
 
-                $this->entityManager->persist($comparison);
-                $prediction->addComparison($comparison);
+                    $this->entityManager->persist($comparison);
+                    $prediction->addComparison($comparison);
+                }
 
                 // Checking finishing position WITHOUT fastest lap
                 [$dropOutPosition, $withoutFL] = $this->checkHighestPositionToDropOut(
@@ -290,7 +308,7 @@ class CalculatorManager
     }
 
     /**
-     * @return array Two values. First being position and second a flag if with Fastest Lap
+     * @return array{int,bool} Two values. First being position and second a flag if with Fastest Lap
      */
     private function checkHighestPositionToDropOut(
         float $predictedLeaderPoints,

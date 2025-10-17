@@ -9,6 +9,7 @@ use App\Service\SeasonManager;
 use App\Trait\LoggerInjector;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 class PredictionController extends AbstractController
@@ -21,7 +22,7 @@ class PredictionController extends AbstractController
     )]
     public function runPrediction(
         CalculatorManager $calculatorManager
-    ) {
+    ): Response {
         try {
             $calculatorManager->calculate();
             $this->addFlash('info', 'Prediction is now being calculated. This might take a few moments.');
@@ -45,7 +46,7 @@ class PredictionController extends AbstractController
         Request $request,
         SeasonManager $seasonManager,
         PredictionManager $predictionManager,
-    ) {
+    ): Response {
         $filters = $request->query->all('filters');
         if (!isset($filters['season'])) {
             $filters['season'] = (new \DateTimeImmutable())->format('Y');
@@ -66,7 +67,7 @@ class PredictionController extends AbstractController
     public function view(
         string $id,
         PredictionManager $predictionManager,
-    ) {
+    ): Response {
         $prediction = $predictionManager->findPredictionById($id);
         if (null === $prediction) {
             // TODO handle alerts

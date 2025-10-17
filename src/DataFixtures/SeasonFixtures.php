@@ -18,7 +18,8 @@ class SeasonFixtures extends Fixture
             ->setRaces(22)
             ->setSprints(3)
             ->setCompletedRaces(17)
-            ->setCompletedSprints(2);
+            ->setCompletedSprints(2)
+            ->setFlExtraPoint(true);
         $manager->persist($season2022);
         $this->addReference('season_2022', $season2022);
 
@@ -30,7 +31,8 @@ class SeasonFixtures extends Fixture
             ->setRaces(23)
             ->setSprints(6)
             ->setCompletedRaces(17)
-            ->setCompletedSprints(3);
+            ->setCompletedSprints(3)
+            ->setFlExtraPoint(true);
         $manager->persist($season2023);
         $this->addReference('season_2023', $season2023);
 
