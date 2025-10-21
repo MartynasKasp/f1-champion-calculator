@@ -154,7 +154,8 @@ class RaceResultManager
                         (int) $season,
                         (int) $currentDate->format('n'),
                         (int) $currentDate->format('j')
-                    )
+                    ),
+                    true
                 );
             } else {
                 $raceEntity = $raceRepo->getRaceForSeasonByStage($seasonEntity->getId(), (int) $sprint, true);

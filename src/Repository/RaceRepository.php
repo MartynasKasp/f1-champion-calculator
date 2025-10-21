@@ -81,11 +81,19 @@ class RaceRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
-    public function getLastRaceByDate(\DateTimeImmutable $date): ?Race
+    public function getLastRaceByDate(\DateTimeImmutable $date, ?bool $sprint = false): ?Race
     {
         $qb = $this->createQueryBuilder('r')
             ->where('r.season = :season')
-            ->setParameter('season', $date->format('Y'))
+            ->setParameter('season', $date->format('Y'));
+
+        if (null !== $sprint) {
+            $qb = $qb
+                ->andWhere('r.sprintRace = :sprint')
+                ->setParameter('sprint', $sprint);
+        }
+
+        $qb = $qb
             ->andWhere('r.date <= :date')
             ->setParameter('date', $date);
 
