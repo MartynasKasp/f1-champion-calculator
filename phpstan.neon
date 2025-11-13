@@ -4,4 +4,12 @@ parameters:
         - src
     excludePaths:
         - tests/*
-    checkGenericClassInNonGenericObjectType: false
+    # checkGenericClassInNonGenericObjectType: false
+    treatPhpDocTypesAsCertain: false
+    # ignoreErrors:
+    #     - identifier: missingType.generics # to keep using 'checkGenericClassInNonGenericObjectType: false' 
+includes:
+    - phar://phpstan.phar/conf/bleedingEdge.neon
+    - vendor/phpstan/phpstan-deprecation-rules/rules.neon
+    - vendor/phpstan/phpstan-symfony/extension.neon
+    - vendor/phpstan/phpstan-symfony/rules.neon

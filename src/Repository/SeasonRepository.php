@@ -5,6 +5,9 @@ namespace App\Repository;
 use App\Entity\Season;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
+/**
+ * @extends ServiceEntityRepository<Season>
+ */
 class SeasonRepository extends ServiceEntityRepository
 {
     public function __construct(\Doctrine\Persistence\ManagerRegistry $registry)

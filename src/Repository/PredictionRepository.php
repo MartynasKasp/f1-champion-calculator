@@ -5,6 +5,9 @@ namespace App\Repository;
 use App\Entity\Prediction;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
+/**
+ * @extends ServiceEntityRepository<Prediction>
+ */
 class PredictionRepository extends ServiceEntityRepository
 {
     public function __construct(\Doctrine\Persistence\ManagerRegistry $registry)

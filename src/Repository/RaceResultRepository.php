@@ -7,6 +7,9 @@ use App\Entity\RaceResult;
 use App\Entity\Season;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
+/**
+ * @extends ServiceEntityRepository<RaceResult>
+ */
 class RaceResultRepository extends ServiceEntityRepository
 {
     public function __construct(\Doctrine\Persistence\ManagerRegistry $registry)

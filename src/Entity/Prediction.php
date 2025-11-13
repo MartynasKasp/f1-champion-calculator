@@ -18,6 +18,7 @@ class Prediction
     #[ORM\ManyToOne]
     protected Driver $driver;
 
+    /** @var Collection<int,PredictionComparison> $comparisons */
     #[ORM\OneToMany(PredictionComparison::class, mappedBy: "prediction")]
     protected Collection $comparisons;
 
@@ -49,6 +50,9 @@ class Prediction
         return $this->driver;
     }
 
+    /**
+     * @return Collection<int,PredictionComparison>
+     */
     public function getComparisons(): Collection
     {
         return $this->comparisons;
@@ -62,6 +66,9 @@ class Prediction
         return $this;
     }
 
+    /**
+     * @param Collection<int,PredictionComparison> $comparisons
+     */
     public function setComparisons(Collection $comparisons): static
     {
         $this->comparisons = $comparisons;

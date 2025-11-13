@@ -144,13 +144,16 @@ class Race
     }
 
     /**
-     * @return Collection<int, RaceResult>
+     * @return Collection<int,RaceResult>
      */
     public function getResults(): Collection
     {
         return $this->results;
     }
 
+    /**
+     * @param Collection<int,RaceResult> $results
+     */
     public function setResults(Collection $results): static
     {
         $this->results = $results;

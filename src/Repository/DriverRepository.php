@@ -5,6 +5,9 @@ namespace App\Repository;
 use App\Entity\Driver;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
+/**
+ * @extends ServiceEntityRepository<Driver>
+ */
 class DriverRepository extends ServiceEntityRepository
 {
     public function __construct(\Doctrine\Persistence\ManagerRegistry $registry)
