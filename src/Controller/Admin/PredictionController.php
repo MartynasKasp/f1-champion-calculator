@@ -25,10 +25,10 @@ class PredictionController extends AbstractController
     ): Response {
         try {
             $calculatorManager->calculate();
-            $this->addFlash('info', 'Prediction is now being calculated. This might take a few moments.');
+            $this->addFlash('info', 'Permutation is now being calculated. This might take a few moments.');
         } catch (\Exception $exception) {
             $this->logger->error(
-                'Error during prediction calculate: ' . $exception->getMessage(),
+                'Error during permutation calculate: ' . $exception->getMessage(),
                 ['route' => 'admin_prediction_calculate']
             );
             $this->addFlash('error', 'Oops! Something went wrong.');
@@ -41,7 +41,7 @@ class PredictionController extends AbstractController
         path: 'admin/predictions',
         name: 'admin_predictions_list'
     )]
-    #[MenuItem(label: 'Predictions', icon: 'fas fa-chart-bar', priority: 70)]
+    #[MenuItem(label: 'Permutations', icon: 'fas fa-chart-bar', priority: 70)]
     public function list(
         Request $request,
         SeasonManager $seasonManager,
@@ -71,7 +71,7 @@ class PredictionController extends AbstractController
         $prediction = $predictionManager->findPredictionById($id);
         if (null === $prediction) {
             // TODO handle alerts
-            $this->addFlash('error', 'Prediction does not exist.');
+            $this->addFlash('error', 'Permutation does not exist.');
             return $this->redirectToRoute('admin_predictions_list');
         }
 

@@ -35,6 +35,9 @@ class RaceResult
     #[ORM\JoinColumn(nullable: false)]
     private ?Race $race = null;
 
+    #[ORM\ManyToOne]
+    private ?Team $constructor;
+
     public function getId(): ?string
     {
         return $this->id;
@@ -103,6 +106,17 @@ class RaceResult
     public function setResultStatus(?string $resultStatus): static
     {
         $this->resultStatus = $resultStatus;
+        return $this;
+    }
+
+    public function getConstructor(): ?Team
+    {
+        return $this->constructor;
+    }
+
+    public function setConstructor(Team $constructor): static
+    {
+        $this->constructor = $constructor;
         return $this;
     }
 }

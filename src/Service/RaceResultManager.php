@@ -6,6 +6,7 @@ use App\Entity\Driver;
 use App\Entity\Race;
 use App\Entity\RaceResult;
 use App\Entity\Season;
+use App\Entity\Team;
 use App\Model\DTO\RaceResultDTO;
 use App\Repository\RaceResultRepository;
 use App\Trait\LoggerInjector;
@@ -103,12 +104,14 @@ class RaceResultManager
                 try {
                     $raceResult = new RaceResult();
                     $raceResult
+                        ->setConstructor($this->findOrCreateConstructorFromResult($result, true))
                         ->setDriver($this->findOrCreateDriverForResult($result))
                         ->setPoints((float) $result->points)
                         ->setPosition((int) $result->position)
                         ->setRace($raceEntity)
                         ->setResultStatus($result->status)
-                        ->setSeason($seasonEntity);
+                        ->setSeason($seasonEntity)
+                    ;
 
                     $this->entityManager->persist($raceResult);
                     $raceEntity->addResult($raceResult);
@@ -182,6 +185,7 @@ class RaceResultManager
                 try {
                     $raceResult = new RaceResult();
                     $raceResult
+                        ->setConstructor($this->findOrCreateConstructorFromResult($result, true))
                         ->setDriver($this->findOrCreateDriverForResult($result))
                         ->setPoints((float) $result->points)
                         ->setPosition((int) $result->position)
@@ -212,11 +216,6 @@ class RaceResultManager
         }
     }
 
-    // public function importLastRaceResults(): void
-    // {
-    //     $this->importRaceResults('current', 'last');
-    // }
-
     public function findOrCreateDriverForResult(
         \ErgastAPI\Model\RaceResultDTO $driver,
         bool $flush = false
@@ -234,11 +233,36 @@ class RaceResultManager
             return $find;
         }
 
+        $teamRepo = $this->entityManager->getRepository(Team::class);
+        $findTeam = $teamRepo->findOneBy(['name' => $driver->constructor]);
+
         $create = new Driver();
         $create
             ->setFullName($driver->driver)
             ->setNumber($driver->number)
-            ->setTeam(null); // TODO
+            ->setTeam($findTeam);
+        $this->entityManager->persist($create);
+
+        if ($flush) {
+            $this->entityManager->flush();
+        }
+
+        return $create;
+    }
+
+    public function findOrCreateConstructorFromResult(
+        \ErgastAPI\Model\RaceResultDTO $result,
+        bool $flush = false
+    ): \App\Entity\Team {
+        $teamRepo = $this->entityManager->getRepository(Team::class);
+        $findTeam = $teamRepo->findOneBy(['name' => $result->constructor]);
+
+        if (null !== $findTeam) {
+            return $findTeam;
+        }
+
+        $create = new Team();
+        $create->setName($result->constructor);
         $this->entityManager->persist($create);
 
         if ($flush) {

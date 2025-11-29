@@ -25,6 +25,10 @@
                                 </div>
 
                                 <div class="form-outline mb-4" data-mdb-input-init>
+                                    {{ form_widget(form.constructor, { 'attr': { 'class': 'form-select form-control-lg' }}) }}
+                                </div>
+
+                                <div class="form-outline mb-4" data-mdb-input-init>
                                     {{ form_widget(form.points, { 'attr': { 'class': 'form-control form-control-lg' }}) }}
                                     {{ form_label(form.points, null, { 'label_attr': { 'class': 'form-label' }}) }}
                                 </div>

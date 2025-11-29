@@ -98,9 +98,9 @@ class CalculatorManager
 
         $calculatedPredictions = $this->calculatePossibleWin($currentSeason);
         if ($calculatedPredictions === null) {
-            $this->logger->info('No predictions for upcoming race calculated.');
+            $this->logger->info('No permutations for upcoming race calculated.');
         } else {
-            $this->logger->info('New predictions for upcoming race calculated.');
+            $this->logger->info('New permutations for upcoming race calculated.');
         }
     }
 
@@ -160,14 +160,14 @@ class CalculatorManager
         $this->entityManager->persist($prediction);
 
         if (null === $leadDriver) {
-            $this->logger->info('No lead driver. Returning empty prediction.');
+            $this->logger->info('No lead driver. Returning empty permutation.');
 
             $this->entityManager->flush();
             return $prediction;
         }
 
         if (0 == count($relevantDrivers)) {
-            $this->logger->info('No relevant drivers. Returning empty prediction.');
+            $this->logger->info('No relevant drivers. Returning empty permutation.');
 
             $this->entityManager->flush();
             return $prediction;
@@ -326,7 +326,7 @@ class CalculatorManager
 
         $i = 1;
         foreach ($availableFinishingPositions as $position => $points) {
-            if (($pointsDiff = ($predictedLeaderPoints - ($contender->seasonPoints + $points))) > $maxPointsLeft) {
+            if (($pointsDiff =  ($predictedLeaderPoints - ($contender->seasonPoints + $points))      ) > $maxPointsLeft) {
                 if ($i === 1) {
                     return [-1, false];
                 }

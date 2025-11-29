@@ -6,7 +6,7 @@
             <div class="col">
                 <section class="mb-4">
                     <div class="card">
-                        <h5 class="card-header">Predictions</h5>
+                        <h5 class="card-header">Permutations</h5>
                         <div class="card-body">
                             <form method="GET" action="{{ path('admin_predictions_list') }}">
                                 {% set filters = app.request.query.all('filters') %}
@@ -68,7 +68,7 @@
                                                                 <i class="fas fa-lg fa-eye"></i>
                                                             </a>
                                                         {% else %}
-                                                            No predictions.
+                                                            No permutations.
                                                         {% endif %}
                                                     </td>
                                                 </tr>

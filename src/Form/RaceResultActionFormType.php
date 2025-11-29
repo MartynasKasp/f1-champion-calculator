@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Driver;
 use App\Entity\RaceResult;
+use App\Entity\Team;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -32,6 +33,14 @@ class RaceResultActionFormType extends AbstractType
                 'choice_label' => function (Driver $driver): string {
                     return sprintf("#%s - %s", $driver->getNumber(), $driver->getFullName());
                 },
+            ])
+            ->add('constructor', EntityType::class, [
+                'class' => Team::class,
+                // 'query_builder' => function (EntityRepository $er): QueryBuilder {
+                //     return $er->createQueryBuilder('t')
+                //         ->orderBy('t.name', 'ASC');
+                // },
+                'choice_label' => fn (Team $team): string => ($team->getName()),
             ])
             ->add('points', NumberType::class, [
                 'required' => false,

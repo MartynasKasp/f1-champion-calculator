@@ -23,14 +23,14 @@
 <div class="col col-lg-4 col-md-6 mb-4">
     <div class="card h-100">
         <div class="card-body">
-            <h5 class="card-title">Prediction for next race</h5>
+            <h5 class="card-title">Permutation for next race</h5>
             {% if prediction is not null %}
                 <p class="card-text">
-                    Prediction for this race has already been run.
+                    Permutation for this race has already been run.
                     {% if prediction.comparisons is not empty %}
-                        <a href="{{ path('admin_predictions_view', { id: prediction.id }) }}">See prediction.</a>
+                        <a href="{{ path('admin_predictions_view', { id: prediction.id }) }}">See permutation.</a>
                     {% else %}
-                        No predictions calculated.
+                        No permutations calculated.
                     {% endif %}
                 </p>
             {% else %}
@@ -40,7 +40,7 @@
                     data-mdb-ripple-init
                 >
                     <i class="fas fa-chart-bar me-3"></i>
-                    Run Prediction 
+                    Run Permutation 
                 </a>
             {% endif %}
         </div>
